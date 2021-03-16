@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+    <head>
+        <title>Trevias Xk</title>
+        <meta charset="UTF8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+        <link rel="stylesheet" href="/data/css/main.css"/>
+    </head>
+    <body>
+        <div class="Content">
+            <br/>
+            <h1>Libhttpsv</h1>
+            <p>Libhttpsv é uma extensão de aplicativo (.dll) para windows, com projeto open-source no GitHub e programado na linguagem C#, com ele o usuário poderá implementar um servidor localhost em seu software de windows, essa extensão é perfeito para criar controle remoto e trocar informações através apenas de conexões http.</p>
+            <h3>Como utilizar em seu software</h3>
+            <p>Primeiro baixe a dll ou o projeto que estiver mais atualizado na página de lançamentos do libhttpsv no GitHub. <a href="https://github.com/treviasxk/libhttpsv/releases">https://github.com/treviasxk/libhttpsv/releases</a>, depois adiciona como referência no seu projeto.</p>
+            <hr/>
+            <h2>Documentação</h2>
+            <h3>AÇÕES</h3>
+            <div class="Codigo">
+                • HostStart(Integer, IP) - HostStart irá ligar o servidor HTTP em um IP e Porta definido na sua rede local.
+                <hr/>
+                • HostStop() - HostStop irá desligar o servidor HTTP.
+            </div>
+            <h3>EVENTOS</h3>
+            <div class="Codigo">
+                • ReceivedNewRequest(HttpListenerRequest) - A cada acesso solicitado pelo o usuário no localhost.
+                <hr/>
+                • ReceivedNewParameter(String, String) - A cada acesso solicitado com uma request no dominio do localhost (exemplo: localhost:8030/?page=download).
+                <hr/>
+                • ChangeStatusServer(StatusServer) - Sempre que o servidor for ligado ou desligado.
+            </div>
+            <h3>VARIÁVEIS</h3>
+                <div class="Codigo">
+                • ConsoleLock - Ao definir valor True, o console não será finalizado ao término do código.
+                <hr/>
+                • Context - No Context você pode adicionar códigos HTML, CSS e JavaScript.
+                <hr/>
+                • ContextEncoding - O ContextEncoding irá codificar a String definido na variável Context, se não definir um encoding, por padrão a codificação será UTF8.
+                <hr/>
+                • ContextFolder - No 'ContextFolder' você pode adicionar a localização de um directório, se existir o arquivo index.html ele será adicionado no Context para a localização raiz do dominio.
+                <hr/>
+                • GetParameter(String) - Aqui você pode pegar os parâmetros de uma URL, por exemplo: no acesso http://127.0.0.1:8030/?download=ArquivoPDF, ao digitar GetParameter("download"), o valor 'ArquivoPDF' será retornado.
+                <hr/>
+                • ProcessLogs - Ao definir valor True nessa variável e caso seu software esteja sendo executado por aplicativo console, você verá todos os logs do HTTPServer.
+                <hr/>
+                • Request - System.Net.HttpListenerRequest
+                <hr/>
+                • Response - System.Net.HttpListenerResponse
+                <hr/>
+                • Status - Status do servidor HTTP.
+                <hr/>
+                • User - System.Security.Principal.IPrincipal</div>
+            <hr/>
+        </div>
+        <br/>
+        <div class="Footer">
+            <a href="https://www.instagram.com/treviasxk/"><img src="/data/img/instagram-logo.png" title="Instagram" draggable="false"></a>
+            <a href="https://github.com/treviasxk"><img src="/data/img/github-logo.png" title="GitHub" draggable="false"></a>
+            <a href="https://www.linkedin.com/in/treviasxk/"><img src="/data/img/linkedin-logo.png" title="LikendIn" draggable="false"></a>
+            <a href="https://twitter.com/treviasxk"><img src="/data/img/twitter-logo.png" title="Twitter" draggable="false"></a>
+            <p>Trevias Xk © 2021</p>
+        </div>
+    </body>
+</html>
