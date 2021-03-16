@@ -30,7 +30,7 @@ h2, h3 {
     border-top:#cccccc 1px solid;
 }
 
-.Content > p {
+.Content > p, li {
     text-align: justify;
 }
 
