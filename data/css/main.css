@@ -2,7 +2,7 @@ body {
     margin: 0px;
     font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     color: #FFFFFF;
-    background-color: rgb(0, 0, 30);
+    background-color: rgb(5, 5, 10);
 }
 
 h2, h3 {
@@ -21,13 +21,6 @@ a {
     display: none;
 }
 
-li:hover + .desc {
-    display: block;
-}
-.desc:hover{
-    display: block;
-}
-
 .Content {
     display: table;
     margin: 0 auto;
@@ -42,13 +35,13 @@ li:hover + .desc {
 
 .Codigo {
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color:#f0f0f0;
+    background-color:#000;
     text-align: justify;
     padding: 10px;
 }
 
 .Codigo > hr{
-    border-top:#cccccc 1px solid;
+    border:#333333 1px solid;
 }
 
 .Content > p, li {
@@ -56,7 +49,7 @@ li:hover + .desc {
 }
 
 .Content > p > a {
-    color: blue;
+    color: rgb(60, 60, 255);
     text-decoration:none;
 }
 
@@ -92,4 +85,17 @@ li:hover + .desc {
     .Codigo {
         width: calc(100% - 20px);
     }
+}
+
+li:hover div{
+    display: block;
+}
+
+.item {
+    text-align: justify;
+    color: #FFFFFF;
+    padding: 20px;
+    background-color: black;
+    width: 550px;
+    display: none;
 }
