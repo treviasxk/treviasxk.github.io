@@ -14,13 +14,6 @@ a {
     text-decoration: none;
 }
 
-.desc {
-    padding: 10px;
-    text-align: justify;
-    width: 500px;
-    display: none;
-}
-
 .Content {
     display: table;
     margin: 0 auto;
@@ -74,6 +67,9 @@ a {
     .Codigo {
         width: 600px;
     }
+    .item{
+        width: 520px;
+    }
 }
 @media(max-width: 640px){
     .Content {
@@ -84,6 +80,9 @@ a {
     }
     .Codigo {
         width: calc(100% - 20px);
+    }
+    .item{
+        width:  calc(100% - 40px);
     }
 }
 
@@ -96,6 +95,5 @@ li:hover div{
     color: #FFFFFF;
     padding: 20px;
     background-color: black;
-    width: 550px;
     display: none;
 }
