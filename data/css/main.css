@@ -1,10 +1,31 @@
 body {
     margin: 0px;
-    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: #FFFFFF;
+    background-color: rgb(0, 0, 30);
 }
 
 h2, h3 {
     text-align: left;
+}
+
+a {
+    color: grey;
+    text-decoration: none;
+}
+
+.desc {
+    padding: 10px;
+    text-align: justify;
+    width: 500px;
+    display: none;
+}
+
+li:hover + .desc {
+    display: block;
+}
+.desc:hover{
+    display: block;
 }
 
 .Content {
