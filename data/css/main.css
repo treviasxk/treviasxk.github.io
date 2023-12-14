@@ -1,4 +1,7 @@
 body {
+    position: absolute;
+    width: 100%;
+    height: 100%;
     margin: 0px;
     font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     color: #FFFFFF;
@@ -52,18 +55,38 @@ body > video {
     object-fit: cover;
 }
 
-.codigo {
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color:#000;
-    text-align: justify;
-    padding: 10px;
+hr:first-of-type{
+    margin-top: 0px;
 }
 
 hr{
+    margin-top: 20px;
     border:#006aff5b 1px solid;
 }
 
-.content > p, li {
+body > object {
+    display: block;
+    width:100%;
+    height:auto;
+}
+
+.date {
+    color: #5574a1;
+    text-align: right;
+}
+
+.content > div > img, .content > div > video {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    max-width: 100%;
+}
+
+.content {
+    width: 100%;
+    min-height: calc(100% - 125px);
+}
+
+p, li {
     text-align: justify;
 }
 
@@ -80,6 +103,10 @@ hr{
     font-weight: bold;
 }
 
+.footer > p {
+    text-align: center;
+}
+
 .footer > a > img {
     padding: 0px 10px;
     width: 30px;
@@ -87,22 +114,15 @@ hr{
 }
 
 
-@media(min-width: 825px){
-    .content > p {
-        width: 810px;
-    }
-    .codigo {
-        width: 600px;
+@media(min-width: 800px){
+    .content {
+        max-width: 810px;
     }
 }
+
 @media(max-width: 825px){
     .content {
+        max-width: calc(100% - 20px);
         padding: 0px 10px;
-    }
-    .content > p {
-        width: 100%;
-    }
-    .codigo {
-        width: calc(100% - 20px);
     }
 }
