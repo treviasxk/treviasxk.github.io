@@ -8,6 +8,10 @@ body {
     background-color: #000000;
 }
 
+#title {
+    display: none;
+}
+
 h1 {
     font-size: 40px;
 }
