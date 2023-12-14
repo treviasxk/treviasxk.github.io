@@ -37,7 +37,7 @@ p > img {
     text-align: center;
 }
 
-.content > img {
+.content > div > img {
     width: 200px;
     height: 200px;
     border-radius: 250px;
@@ -90,7 +90,7 @@ p, li {
     text-align: justify;
 }
 
-.content > p > a {
+.content div > p > a {
     color: rgb(60, 60, 255);
     text-decoration:none;
 }
