@@ -49,7 +49,7 @@ p > img {
 
 body > video {
     position: fixed;
-    opacity: 0.2;
+    opacity: 0.1;
     left: 0px;
     top: 0px;
     width: 100%;
@@ -93,7 +93,7 @@ p, li {
     text-align: justify;
 }
 
-.content div > p > a {
+.content > div > p > a {
     color: rgb(60, 60, 255);
     text-decoration:none;
 }
