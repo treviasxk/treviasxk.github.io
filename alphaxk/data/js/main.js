@@ -64,6 +64,7 @@ function LoadPost(id, content){
   get(child(dbRef, `alphaxk/posts/` + id)).then((snapshot) => {
   if(snapshot.exists()) {
       document.title = snapshot.val().title + " - " + document.title;
+      content.innerHTML = "<h2>" + snapshot.val().title + "</h2><hr/>";
       content.innerHTML = snapshot.val().content;
       content.innerHTML += '<p class="date">Date: '+snapshot.val().date+'</p>'
   } else {
