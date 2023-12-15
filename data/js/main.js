@@ -17,6 +17,10 @@ function includeHTML() {
     const urlParams = new URLSearchParams(window.location.search);
     let searchParams = new URLSearchParams(urlParams);
 
+    if(searchParams.get("page") && file == "data/pages/home.html"){
+      LoadPage(searchParams.get("page"), elmnt);
+      return;
+    }else
     if(searchParams.get("post") && file == "data/pages/home.html"){
       LoadPost(searchParams.get("post"), elmnt);
     }else{
@@ -40,6 +44,25 @@ function includeHTML() {
       }
     }
   }
+}
+
+async function LoadPage(page, content){
+  var file = "data/pages/" + page + ".html";
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function(){
+    if(this.readyState == 4) {
+      if(this.status == 200) {
+        content.innerHTML = this.responseText;
+        if(file == "data/pages/home.html")
+          LoadAttribute(title);
+      }
+      if(this.status == 404) {content.innerHTML = "<h1>Page not found.</h1>";}
+      content.removeAttribute("w3-include-html");
+      includeHTML();
+    }
+  }
+  xhttp.open("GET", file, true);
+  xhttp.send();
 }
 
 async function LoadPost(id, content){

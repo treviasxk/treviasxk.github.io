@@ -61,11 +61,38 @@ hr{
 .footer > p {
     text-align: center;
 }
+.footer > p > a {
+    color: var(--PrimaryColor);
+}
+.footer > p > a:hover {
+    color: var(--ShadowColor);
+}
 
 .footer > a > img {
     padding: 0px 10px;
     width: 30px;
     height: 30px; 
+}
+
+.vertical-menu {
+    width: 100%;
+    height: calc(100% - 200px);
+}
+  
+.vertical-menu a {
+    color: black;
+    display: block;
+    padding: 12px;
+    text-align: left;
+}
+
+.vertical-menu a:hover {
+    background-color: var(--ShadowColor);
+}
+
+.vertical-menu a.active {
+    background-color: var(--PrimaryColor);
+    color: var(--AppBarText);
 }
 
 /*Layout básico*/
