@@ -78,25 +78,11 @@ body > object {
     text-align: right;
 }
 
-.content > div > img, .content > div > video {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    max-width: 100%;
-}
-
-.content {
-    width: 100%;
-    min-height: calc(100% - 125px);
-}
 
 p, li {
     text-align: justify;
 }
 
-.content > div > p > a {
-    color: rgb(60, 60, 255);
-    text-decoration:none;
-}
 
 .footer {
     display: table;
@@ -114,18 +100,4 @@ p, li {
     padding: 0px 10px;
     width: 30px;
     height: 30px; 
-}
-
-
-@media(min-width: 800px){
-    .content {
-        max-width: 810px;
-    }
-}
-
-@media(max-width: 825px){
-    .content {
-        max-width: calc(100% - 20px);
-        padding: 0px 10px;
-    }
 }

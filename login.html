@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1 user-scalable=no"/>
-        <title>My Dev Blog</title>
+        <title>Entrar</title>
         <link rel="manifest" href="data/json/manifest.json"/>
         <link type="text/css" rel="stylesheet" href="data/css/main.css"/>
         <link type="text/css" rel="stylesheet" href="data/css/layout.css"/>
@@ -11,32 +11,29 @@
         <script type="text/javascript" src="data/js/config.js"></script>
         <script type="text/javascript" src="data/js/layout.js"></script>
         <script type="module" src="data/js/main.js"></script>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3672225005905652" crossorigin="anonymous"></script>
     </head>
     <body>
-        <video autoplay muted loop id="myVideo">
-            <source src="data/video/background.mp4" type="video/mp4">
-        </video>
         <div id="AppBar">
             <div>
-                <div id="OpenMenu"></div>
+                <div id="BackPage"></div>
             </div>
-            <div id="Title" class="Middle">My Dev Blog</div>
+            <div class="Middle">Entrar</div>
             <div>
-                <div id="SignIn"></div>
+                <div id="NoButton"></div>
             </div>
         </div>
+        
         <div id="ScreenLoading">
             <div class="ContentScreenLoading"><img src="data/img/loading.gif" width="125" height="125" alt="Carregando..."/></div>
         </div>
-        <div id="Navigate">
-
-        </div>
-        <div id="Content">
-            <div class="Feed">
-                <div w3-include-html="data/pages/home.html"></div>
+        <div id="Content" class="SlideLeft">
+            <div class="FullScreen">
+                <form>
+                    <input type="email" placeholder="Email"/>
+                    <input type="password" placeholder="Senha"/>
+                    <input class="btn" type="submit" value="Entrar"/>
+                </form>
             </div>
-            <div w3-include-html="data/layout/footer.html"></div>
         </div>
     </body>
 </html>
