@@ -1,10 +1,18 @@
+/*
+    Software Developed by Trevias Xk
+    Social Networks:     treviasxk
+    Github:              https://github.com/treviasxk
+    Paypal:              trevias@live.com
+*/
+
 /*Layout main*/
 :root {
-    --PrimaryColor: #006aff;
+    --PrimaryColor: #065acf;
     --SegundaryColor: #03498f;
     --BackgroundColor: #000000;
     --ShadowColor: #006aff5b;
     --AppBarText: #FFFFFF;
+    --PanelBackground: #000000c0;
 }
 
 @media (prefers-color-scheme: light) {
@@ -46,7 +54,7 @@ body {
 
 body > video {
     position: fixed;
-    opacity: 0.2;
+    opacity: 0.3;
     left: 0px;
     top: 0px;
     width: 100%;
@@ -117,11 +125,11 @@ body > video {
 
 #Content {
     position: absolute;
-    z-index: 0;
     left: 0px;
-    margin-top: 50px;
+    top: 50px;
     width: 100%;
-    min-height: calc(100% - 60px);
+    min-height: calc(100% - 50px);
+    transition: 0.2s;
 }
 
 

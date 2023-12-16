@@ -1,6 +1,71 @@
+/*
+    Software Developed by Trevias Xk
+    Social Networks:     treviasxk
+    Github:              https://github.com/treviasxk
+    Paypal:              trevias@live.com
+*/
+
 var Loading = true;
-LoadAttribute(title);
-window.addEventListener('load', () => {
+supabase = null;
+
+window.onload = async function(){
+    includeHTML();
+}
+  
+async function includeHTML(){
+    var z, i, content, page;
+    z = document.getElementsByTagName("div");
+    for(i = 0; i < z.length; i++){
+        content = z[i];
+        page = content.getAttribute("w3-include-html");
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let searchParams = new URLSearchParams(urlParams);
+
+        if(searchParams.get("post"))
+            if(page == "data/layout/appbar.html")
+                page = "data/layout/appbar_backpage.html";
+
+        if(searchParams.get("page") && page == "data/pages/home.html"){
+            await LoadPage(searchParams.get("page"), content);
+            return;
+        }else
+        if(searchParams.get("post") && page == "data/pages/home.html"){
+            await LoadPost(searchParams.get("post"), content);
+        }else{
+            if(page){
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function(){
+                    if(this.readyState == 4) {
+                        var elmnt = content.parentNode;
+                        if(this.status == 200){
+                        content.innerHTML = this.responseText;
+                        if(page == "data/pages/home.html"){
+                            SelectMenuItem("home");
+                            ChangeTitle(title);
+                        }
+                        }
+                        if(this.status == 404) {content.innerHTML = "<h1>Page not found.</h1>";}
+                        for(const child of content.childNodes)
+                        elmnt.appendChild(child.cloneNode(true));
+                        content.remove();
+                
+                        includeHTML();
+                    }
+                }
+                xhttp.open("GET", page, true);
+                xhttp.send();
+                return;
+            }
+        }
+    }
+    LoadSwipe();
+}
+
+
+
+ChangeTitle(title);
+function LoadSwipe() {
     CloseScreenLoading();
     var content = document.getElementById('Content');
     if(!document.body.contains(document.getElementById('BackPage'))){
@@ -15,16 +80,15 @@ window.addEventListener('load', () => {
         });
     }else{
         swipedetect(content, (swipedir) => {
-            if (swipedir =='right')
+            if(swipedir =='right')
                 BackPage();
         });
     }
-});
+};
 
 function BackPage(){
     document.getElementById("Content").classList.add("SlideRight");
     setTimeout(function() {
-        //location.href='/';
         window.history.back();
     }, 200);
 }
@@ -33,11 +97,15 @@ function BackPage(){
 function OpenNavigation(Open){
     if(Open == false){
         Navigate.style.left = "0px";
+        Content.style.top = "50px";
+        Content.style.minHeight = "calc(100% - 50px)";
         Content.style.opacity = null;
         document.getElementById("AppBar").style.marginTop = "0px";
 
     }else{
         Navigate.style.left = "-100%";
+        Content.style.top = "0px";
+        Content.style.minHeight = "100%";
         Content.style.opacity = "0.2";
         document.getElementById("AppBar").style.marginTop = "-50px";
     }
@@ -116,7 +184,7 @@ window.onscroll = () => {
     }
 }
 
-function LoadAttribute(newtitle){
+function ChangeTitle(newtitle){
     newtitle = newtitle[0].toUpperCase() + newtitle.slice(1);
     var elment = document.getElementById("Title");
     if(elment)
@@ -124,4 +192,56 @@ function LoadAttribute(newtitle){
     if(newtitle != title)
         newtitle += " - " + title;
     document.title = newtitle;
+}
+
+async function LoadPost(id, content){
+    content.removeAttribute("w3-include-html");
+    const { data } = await supabase
+    .from('posts')
+    .select()
+    .eq('id', id);
+    if(data[0]){
+      ChangeTitle(data[0].title);
+      content.innerHTML = '<div class="Feed"><div class="Card">' + data[0].content + '<hr/><p class="CardDateTime">Date: '+ data[0].date + '</p></div></div>';
+    }else{
+      content.innerHTML = "<h1>Page not found.</h1>";
+    }
+}
+
+function SelectMenuItem(page){
+    var navigate = document.querySelectorAll('.MenuItem');
+    for(const child of navigate)
+      if(child.getAttribute("href") == "?page=" + page || child.getAttribute("href") == "/" && page == "home")
+        child.setAttribute("class", "MenuItemSeleteced");
+}
+
+async function LoadPage(page, content){
+    var file = "data/pages/" + page + ".html";
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function(){
+      if(this.readyState == 4) {
+        var elmnt = content.parentNode;
+        if(this.status == 200) {
+          content.innerHTML = this.responseText;
+          SelectMenuItem(page);
+          ChangeTitle(page);
+
+          const urlParams = new URLSearchParams(window.location.search);
+          let searchParams = new URLSearchParams(urlParams);
+          if(searchParams.get("post")){
+            if(elmnt)
+              elmnt.setAttribute("class", "SlideLeft");
+          }
+        }
+        if(this.status == 404) {content.innerHTML = "<h1>Page not found.</h1>";}
+  
+        for(const child of content.childNodes)
+          elmnt.appendChild(child.cloneNode(true));
+        content.remove();
+        includeHTML();
+      }
+    }
+
+    xhttp.open("GET", file, true);
+    xhttp.send();
 }
