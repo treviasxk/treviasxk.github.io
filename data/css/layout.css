@@ -93,6 +93,8 @@ body > video {
     font-weight: bold;
     font-size: 20px;
     text-align: center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     width: 100%;
 }
 
@@ -113,9 +115,6 @@ body > video {
     transition: 0.2s linear;
 }
 
-#Navigate > div {
-    height: 100%;
-}
 #Content {
     position: absolute;
     z-index: 0;

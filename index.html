@@ -14,17 +14,11 @@
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3672225005905652" crossorigin="anonymous"></script>
     </head>
     <body>
-        <video autoplay muted loop id="myVideo">
+        <video autoplay muted loop disablePictureInPicture id="myVideo">
             <source src="data/video/background.mp4" type="video/mp4">
         </video>
         <div id="AppBar">
-            <div>
-                <div id="OpenMenu"></div>
-            </div>
-            <div id="Title" class="Middle">MyDevBlog</div>
-            <div>
-                <div id="SignIn"></div>
-            </div>
+            <div w3-include-html="data/layout/appbar.html"></div>
         </div>
         <div id="ScreenLoading">
             <div class="ContentScreenLoading"><img src="data/img/loading.gif" width="125" height="125" alt="Carregando..."/></div>
@@ -32,10 +26,8 @@
         <div id="Navigate">
             <div w3-include-html="data/layout/navigate.html"></div>
         </div>
-        <div id="Content">
-            <div class="Feed">
-                <div w3-include-html="data/pages/home.html"></div>
-            </div>
+        <div id="Content" onclick="OpenNavigation(false);">
+            <div w3-include-html="data/pages/home.html"></div>
         </div>
     </body>
 </html>

@@ -4,13 +4,6 @@ window.addEventListener('load', () => {
     CloseScreenLoading();
     var content = document.getElementById('Content');
     if(!document.body.contains(document.getElementById('BackPage'))){
-        document.getElementById("OpenMenu").onclick = function() {
-            OpenNavigation(true);
-        };
-        document.getElementById("Content").onclick = function() {
-            OpenNavigation(false);
-        };
-
         swipedetect(content, (swipedir) => {
             if (swipedir =='right')
                 OpenNavigation(true);
@@ -21,19 +14,11 @@ window.addEventListener('load', () => {
                 OpenNavigation(false);
         });
     }else{
-        document.getElementById("BackPage").onclick = function() {
-            BackPage();
-        };
-
         swipedetect(content, (swipedir) => {
             if (swipedir =='right')
                 BackPage();
         });
     }
-    if(document.body.contains(document.getElementById('SignIn')))
-    document.getElementById("SignIn").onclick = function() {
-        window.location.href="login.html";
-    };
 });
 
 function BackPage(){
@@ -131,9 +116,12 @@ window.onscroll = () => {
     }
 }
 
-function LoadAttribute(title){
-    document.title = title;
+function LoadAttribute(newtitle){
+    newtitle = newtitle[0].toUpperCase() + newtitle.slice(1);
     var elment = document.getElementById("Title");
     if(elment)
-        elment.innerText = title;
+        elment.innerText = newtitle;
+    if(newtitle != title)
+        newtitle += " - " + title;
+    document.title = newtitle;
 }
