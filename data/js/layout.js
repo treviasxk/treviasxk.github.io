@@ -8,6 +8,7 @@
 var Loading = true;
 supabase = null;
 supabaseUser = null;
+toastTimer = null;
 
 async function login(){
     if(Email && Password && Submit){
@@ -37,14 +38,16 @@ async function login(){
 
 
 function ShowToast(text){
+    clearInterval(toastTimer);
     if(Alert){
         Alert.style.visibility = "visible";
         Alert.innerText = text;
         Alert.style.opacity = "1";
     }
-    window.setInterval(function (){
+    toastTimer = setInterval(function (){
         Alert.style.opacity = "0";
         Alert.style.visibility = "hidden";
+        clearInterval(toastTimer);
     }, 5000);
 }
 
@@ -219,10 +222,11 @@ var prevScrollpos = window.pageYOffset;
 window.onscroll = () => {
     if(Loading == false){
         var currentScrollPos = window.pageYOffset;
-        if(prevScrollpos >= currentScrollPos || prevScrollpos == 0)
+        if(prevScrollpos >= currentScrollPos || prevScrollpos == 0){
             document.getElementById("AppBar").style.marginTop = "0px";
-        else
+        }else{
             document.getElementById("AppBar").style.marginTop = "-50px";
+        }
         prevScrollpos = currentScrollPos;
     }
     else{
@@ -230,11 +234,14 @@ window.onscroll = () => {
     }
 }
 
-function ChangeTitle(newtitle){
+function ChangeTitle(newtitle, header){
     newtitle = newtitle[0].toUpperCase() + newtitle.slice(1);
     var elment = document.getElementById("Title");
-    if(elment)
-        elment.innerText = newtitle;
+    if(header)
+        elment.innerText = header;
+    else
+        if(elment)
+            elment.innerText = newtitle;
     if(newtitle != title)
         newtitle += " - " + title;
     document.title = newtitle;
@@ -247,7 +254,7 @@ async function LoadPost(id, content){
     .select()
     .eq('id', id);
     if(data[0]){
-      ChangeTitle(data[0].title);
+      ChangeTitle(data[0].title, "Post");
       content.innerHTML = '<div class="Feed"><div class="Card">' + data[0].content + '<hr/><p class="CardDateTime">Date: '+ data[0].date + '</p></div></div>';
     }else{
       content.innerHTML = "<h1>Page not found.</h1>";
