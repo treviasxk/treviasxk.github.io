@@ -31,7 +31,7 @@ p > img {
 
 .profile {
     width: 200px !important;
-    height: 200px !important;
+    height: auto !important;
     border-radius: 250px;
     border: var(--PrimaryColor) 1px solid;
 }
@@ -106,7 +106,7 @@ hr{
     background: var(--PanelBackground);
 }
 
-.Card > img, .Card > video {
+.Card > img, .Card > video, .Card > a > img {
     text-align: center;
     max-width: 100%;
     height: auto;
