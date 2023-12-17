@@ -256,6 +256,7 @@ async function LoadPost(id, content){
     if(data[0]){
       ChangeTitle(data[0].title, "Post");
       content.innerHTML = '<div class="Feed"><div class="Card">' + data[0].content + '<hr/><p class="CardDateTime">Date: '+ data[0].date + '</p></div></div>';
+      document.getElementById("Content").classList.add("SlideLeft");
     }else{
       content.innerHTML = "<h1>Page not found.</h1>";
     }
