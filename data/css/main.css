@@ -1,0 +1,170 @@
+/*
+    Software Developed by Trevias Xk
+    Social Networks:     treviasxk
+    Github:              https://github.com/treviasxk
+    Paypal:              trevias@live.com
+*/
+
+h1 {
+    font-size: 40px;
+}
+h2, h3 {
+    text-align: left;
+}
+
+a {
+    font-size: 17px;
+    color: var(--TextColor);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a:hover{
+    color: var(--PrimaryColor);
+}
+
+p > img {
+    width: 100%;
+    text-align: center;
+}
+
+
+.profile {
+    width: 200px !important;
+    height: 200px !important;
+    border-radius: 250px;
+    border: var(--PrimaryColor) 1px solid;
+}
+
+hr{
+    margin-top: 25px;
+    border:var(--ShadowColor) 1px solid;
+}
+
+
+.Footer {
+    display: table;
+    margin: 0 auto;
+    margin-top: 10px;
+    text-align: center;
+    width: 100%;
+    color: #888888;
+    font-weight: bold;
+}
+
+.Footer > p {
+    text-align: center;
+}
+.Footer > p > a {
+    color: var(--PrimaryColor);
+}
+.Footer > p > a:hover {
+    color: var(--ShadowColor);
+}
+
+.Footer > a > img {
+    padding: 0px 10px;
+    width: 30px;
+    height: 30px; 
+}
+
+.VerticalMenu{
+    color: var(--TextColor);
+    width: 100%;
+    height: calc(100% - 200px);
+}
+  
+.VerticalMenu > a{
+    color: var(--TextColor);
+    display: block;
+    padding: 12px;
+    text-align: left;
+}
+
+.VerticalMenu a:hover {
+    background-color: var(--ShadowColor);
+}
+
+.MenuItemSeleteced {
+    background-color: var(--PrimaryColor);
+    color: var(--AppBarText);
+}
+
+/*Layout básico*/
+.Feed {
+    display: table;
+    margin: 0px auto;;
+}
+.Card {
+    text-align: center;
+    max-width: 810px;
+    border-radius: 5px;
+    padding: 10px;
+    width: calc(100% - 40px);
+    margin: 10px;
+    box-shadow: 0px 0px 5px var(--ShadowColor);
+    background: var(--PanelBackground);
+}
+
+.Card > img, .Card > video {
+    text-align: center;
+    max-width: 100%;
+    height: auto;
+    margin: 10px 0px;
+}
+
+.Card > p, .Card > ul > li, .Card > li {
+    text-align: justify;
+    margin: 0px;
+}
+
+.Card > p > a {
+    color: dodgerblue;
+}
+.Card > .titulo {
+    font-weight: bold;
+    border-bottom: 1px solid var(--ShadowColor);
+    padding-bottom: 15px;
+}
+.CardDateTime {
+    text-align: right !important;
+    color: var(--ShadowColor);
+}
+
+.FullScreen{
+    display: table;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: var(--PanelBackground);
+}
+
+.FullScreen > form{
+    display: table-cell;
+    vertical-align: middle;
+}
+
+form{
+    text-align: center;
+}
+form > input, form > select{
+    background-color: var(--BackgroundColor);
+    box-sizing: border-box;
+    text-align: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px 10px;
+    width: 90%;
+    max-width: 300px;
+    margin-bottom: 10px;
+    border: 1px solid var(--ShadowColor);
+    color: var(--TextColor);
+    border-radius: 5px;
+}
+
+.btn {
+    cursor: pointer;
+    color: var(--AppBarText);
+    background-color: var(--PrimaryColor);
+}
