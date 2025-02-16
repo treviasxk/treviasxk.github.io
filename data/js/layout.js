@@ -121,11 +121,13 @@ async function includeHTML(){
     LoadSwipe();
 
 
-
     
-    if(user && SignIn){
-        SignIn.setAttribute("onclick","window.location.href='?page=perfil';");
-        SignIn.setAttribute("id","Perfil");
+    if(user){
+        var SignIn = document.getElementById("SignIn");
+        if(SignIn){
+            SignIn.setAttribute("onclick","window.location.href='?page=perfil';");
+            SignIn.setAttribute("id","Perfil");
+        }
     }
 }
 
@@ -310,8 +312,9 @@ async function LoadPost(id, content){
     .eq('id', id);
     if(data[0]){
         ChangeTitle(data[0].title, "Post");
+        /*
         const { data: { user } } = await supabase.auth.getUser();
-        console.log(user);
+        console.log(user);*/
             
         var afterContent = ()=>{
             document.getElementsByClassName("title").item(0).innerText = data[0].title;
@@ -320,8 +323,6 @@ async function LoadPost(id, content){
         }
 
         await LoadLayout("post", content, afterContent);
-
-
         document.getElementById("Content").classList.add("SlideLeft");
     }else{
         await LoadPage("404", content, afterContent);
@@ -390,14 +391,13 @@ async function LoadLayout(page, content, action = null){
             if(elmnt)
               elmnt.setAttribute("class", "SlideLeft");
           }
+
           action?.apply();
+          content.remove();
         }
   
         for(const child of content.childNodes)
           elmnt.appendChild(child.cloneNode(true));
-        
-        
-        includeHTML();
       }
     }
 
