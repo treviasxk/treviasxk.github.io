@@ -92,24 +92,17 @@ hr{
 }
 
 /*Layout básico*/
-.Feed {
-    display: table;
-    margin: 0px auto;
-    max-width: 100%;
-}
 
 .Card {
     text-align: center;
-    max-width: 810px;
     border-radius: 5px;
     padding: 10px;
-    width: calc(100% - 40px);
     margin: 10px;
     box-shadow: 0px 0px 5px var(--ShadowColor);
     background: var(--PanelBackground);
 }
 
-.Card > img, .Card > video, .Card > a > img {
+.Card > * > img, .Card > img, .Card > video, .Card > a > img {
     text-align: center;
     max-width: 100%;
     height: auto;
@@ -124,10 +117,11 @@ hr{
 .Card > p > a {
     color: dodgerblue;
 }
-.Card > .titulo {
+.Card > .title {
     font-weight: bold;
     border-bottom: 1px solid var(--ShadowColor);
     padding-bottom: 15px;
+    margin-bottom: 15px;
 }
 .CardDateTime {
     text-align: right !important;

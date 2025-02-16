@@ -7,8 +7,8 @@
 
 var Loading = true;
 supabase = null;
-supabaseUser = null;
 toastTimer = null;
+supabaseUser = null;
 
 async function login(){
     if(Email && Password && Submit){
@@ -55,8 +55,10 @@ function ShowToast(text){
 window.onload = async function(){
     includeHTML();
 }
-  
+
 async function includeHTML(){
+    const { data: { user } } = await supabase.auth.getUser();
+
     var z, i, content, page;
     z = document.getElementsByTagName("div");
     for(i = 0; i < z.length; i++){
@@ -71,7 +73,10 @@ async function includeHTML(){
                 page = "data/layout/appbar_backpage.html";
 
         if(searchParams.get("page") && page == "data/pages/home.html"){
-            await LoadPage(searchParams.get("page"), content);
+            if(searchParams.get("page") == "blog")
+                await LoadBlog(searchParams.get("page"), content, searchParams.get("row") ? searchParams.get("row") : 0)
+            else
+                await LoadPage(searchParams.get("page"), content);
             return;
         }else
         if(searchParams.get("post") && page == "data/pages/home.html"){
@@ -86,10 +91,10 @@ async function includeHTML(){
                         content.innerHTML = this.responseText;
                         if(page == "data/pages/home.html"){
                             SelectMenuItem("home");
-                            ChangeTitle(title);
+                            ChangeTitle("Home");
                         }
                         }
-                        if(this.status == 404) {content.innerHTML = "<h1>Page not found.</h1>";}
+                        if(this.status == 404) {LoadPage("404", content, afterContent);}
                         for(const child of content.childNodes)
                         elmnt.appendChild(child.cloneNode(true));
                         content.remove();
@@ -105,7 +110,10 @@ async function includeHTML(){
     }
     LoadSwipe();
 
-    if(supabaseUser && SignIn){
+
+
+    
+    if(user && SignIn){
         SignIn.setAttribute("onclick","window.location.href='?page=perfil';");
         SignIn.setAttribute("id","Perfil");
     }
@@ -113,7 +121,6 @@ async function includeHTML(){
 
 
 
-ChangeTitle(title);
 function LoadSwipe() {
     CloseScreenLoading();
     var content = document.getElementById('Content');
@@ -247,18 +254,67 @@ function ChangeTitle(newtitle, header){
     document.title = newtitle;
 }
 
+async function LoadBlog(id, content, index = 0){
+    content.removeAttribute("w3-include-html");
+    var total = 10;
+    var startpage = total * index;
+    var endpage = total * index + 1;
+    const { data, error } = await supabase
+    .from('blog')
+    .select()
+    .range(startpage, endpage);
+    if(data.length > 0){
+        var afterContent = () =>{
+            var content = "<h1>Ultimos posts</h1>";
+            for(i = 0; i < data.length; i++){
+                content += '<a href="?post=' +data[i].id +'">'+data[i].title+'</a></p><hr/><div class="CardDateTime">13:46 18/03/2021</div></div>';
+            }
+            var next = index;
+            var back = index;
+            back--;
+            next++;
+
+            if(back >= 0)
+                content += '<a class="button" href="?page=blog&row=' + back + '"> Back</a>';
+
+            var x = data.length;
+            if(next < x--)
+                content += '<a href="?page=blog&row=' + next + '"> Next</a>';
+
+            document.getElementsByClassName("Feed").item(0).innerHTML = content;
+            
+        }
+        await LoadPage("blog", content, afterContent);
+
+        document.getElementById("Content").classList.add("SlideLeft");
+    }else{
+        await LoadPage("404", content, afterContent);
+    }
+}
+
 async function LoadPost(id, content){
     content.removeAttribute("w3-include-html");
-    const { data } = await supabase
-    .from('posts')
+    const { data, error } = await supabase
+    .from('blog')
     .select()
     .eq('id', id);
     if(data[0]){
-      ChangeTitle(data[0].title, "Post");
-      content.innerHTML = '<div class="Feed"><div class="Card">' + data[0].content + '<hr/><p class="CardDateTime">Date: '+ data[0].date + '</p></div></div>';
-      document.getElementById("Content").classList.add("SlideLeft");
+        ChangeTitle(data[0].title, "Post");
+        const { data: { user } } = await supabase.auth.getUser();
+        console.log(user);
+            
+        var afterContent = ()=>{
+            document.getElementsByClassName("title").item(0).innerText = data[0].title;
+            document.getElementsByClassName("content").item(0).innerHTML = data[0].content;
+            document.getElementsByClassName("CardDateTime").item(0).innerText = new Date(data[0].date);
+        }
+
+        await LoadPage("post", content, afterContent);
+
+
+        document.getElementById("Content").classList.add("SlideLeft");
     }else{
-      content.innerHTML = "<h1>Page not found.</h1>";
+        await LoadPage("404", content, afterContent);
     }
 }
 
@@ -269,7 +325,7 @@ function SelectMenuItem(page){
         child.setAttribute("class", "MenuItemSeleteced");
 }
 
-async function LoadPage(page, content){
+async function LoadPage(page, content, action = null){
     var file = "data/pages/" + page + ".html";
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function(){
@@ -286,8 +342,9 @@ async function LoadPage(page, content){
             if(elmnt)
               elmnt.setAttribute("class", "SlideLeft");
           }
+          action?.apply();
         }
-        if(this.status == 404) {content.innerHTML = "<h1>Page not found.</h1>";}
+        if(this.status == 404) {LoadPage("404", content, afterContent)}
   
         for(const child of content.childNodes)
           elmnt.appendChild(child.cloneNode(true));

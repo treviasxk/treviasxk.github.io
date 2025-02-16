@@ -28,6 +28,14 @@
     }
 }
 
+@media (max-width: 1024px) {
+    .Feed {
+        display: table;
+        margin: 0px auto;
+        width: 100%;
+    }
+}
+
 ::-webkit-scrollbar {
     width: 5px;
     background: var(--BackgroundColor);
@@ -188,12 +196,19 @@ body > video {
     width: 25px;
     height: 25px;
     background: url("/data/img/icons.png") -75px 0px;
-    border-radius: 10px;
+    border-radius: 25px;
 }
 #NoButton{
     margin: 0px 15px;
     width: 25px;
     height: 25px;
+}
+
+.Feed {
+    display: table;
+    margin: 0px auto;
+    width: 810px;
+    max-width: 100%;
 }
 
 /*Animações*/
