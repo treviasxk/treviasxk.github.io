@@ -311,7 +311,6 @@ async function LoadPost(id, content){
     .select()
     .eq('id', id);
     if(data[0]){
-        ChangeTitle(data[0].title, "Post");
         /*
         const { data: { user } } = await supabase.auth.getUser();
         console.log(user);*/
@@ -320,6 +319,7 @@ async function LoadPost(id, content){
             document.getElementsByClassName("title").item(0).innerText = data[0].title;
             document.getElementsByClassName("content").item(0).innerHTML = data[0].content;
             document.getElementsByClassName("CardDateTime").item(0).innerText = new Date(data[0].date);
+            ChangeTitle(data[0].title, "Post");
         }
 
         await LoadLayout("post", content, afterContent);
