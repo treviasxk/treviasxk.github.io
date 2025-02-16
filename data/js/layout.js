@@ -5,6 +5,14 @@
     Paypal:              trevias@live.com
 */
 
+
+// Rederict to /
+const params = window.location.search;
+const path = window.location.pathname;
+if(path == "/index.html")
+    window.location.href= "/" + params;
+
+
 var Loading = true;
 supabase = null;
 toastTimer = null;
@@ -97,11 +105,10 @@ async function includeHTML(){
                             ChangeTitle("Home");
                         }
                         }
-                        if(this.status == 404) {LoadPage("404", content, afterContent);}
+                        if(this.status == 404) {LoadPage("404", content);}
                         for(const child of content.childNodes)
-                        elmnt.appendChild(child.cloneNode(true));
+                            elmnt.appendChild(child.cloneNode(true));
                         content.remove();
-                
                         includeHTML();
                     }
                 }
@@ -166,6 +173,7 @@ function OpenNavigation(Open){
         Content.style.top = "0px";
         Content.style.minHeight = "100%";
         Content.style.opacity = "0.2";
+        if(!Loading)
         document.getElementById("AppBar").style.marginTop = "-50px";
     }
     
@@ -267,29 +275,30 @@ async function LoadBlog(id, content, index = 0){
     .range(startpage, endpage);
     if(data.length > 0){
         var afterContent = () =>{
-            var content = "<h1>Ultimos posts</h1>";
-            for(i = 0; i < data.length; i++){
-                content += '<a href="?post=' +data[i].id +'">'+data[i].title+'</a></p><hr/><div class="CardDateTime">' + new Date(data[0].date) + '</div></div>';
-            }
-            var next = index;
-            var back = index;
-            back--;
-            next++;
-
-            if(back >= 0)
-                content += '<a class="button" href="?page=blog&row=' + back + '">Back</a>';
-
-            if(next == totalPosts)
-                content += '<a href="?page=blog&row=' + next + '">Next</a>';
-
-            document.getElementsByClassName("Feed").item(0).innerHTML = content;
+            var card = document.getElementsByClassName("Card").item(0);
+                for(i = 0; i < data.length; i++)
+                    card.innerHTML += '<a href="?post=' +data[i].id +'">'+data[i].title+'</a></p><hr/><div class="CardDateTime">' + new Date(data[0].date) + '</div></div>';
+    
+                var next = index;
+                var back = index;
+                back--;
+                next++;
+    
+                if(back >= 0)
+                    card.innerHTML += '<a class="button" href="?page=blog&row=' + back + '">Back</a>';
+    
+                if(next == totalPosts)
+                    card.innerHTML += '<a href="?page=blog&row=' + next + '">Next</a>';
             
+
         }
+
+
         await LoadPage("blog", content, afterContent);
 
         document.getElementById("Content").classList.add("SlideLeft");
     }else{
-        await LoadPage("404", content, afterContent);
+        await LoadPage("404", content);
     }
 }
 
@@ -310,7 +319,7 @@ async function LoadPost(id, content){
             document.getElementsByClassName("CardDateTime").item(0).innerText = new Date(data[0].date);
         }
 
-        await LoadPage("post", content, afterContent);
+        await LoadLayout("post", content, afterContent);
 
 
         document.getElementById("Content").classList.add("SlideLeft");
@@ -329,7 +338,7 @@ function SelectMenuItem(page){
 async function LoadPage(page, content, action = null){
     var file = "data/pages/" + page + ".html";
     var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function(){
+    xhttp.onreadystatechange = async function(){
       if(this.readyState == 4) {
         var elmnt = content.parentNode;
         if(this.status == 200) {
@@ -344,12 +353,50 @@ async function LoadPage(page, content, action = null){
               elmnt.setAttribute("class", "SlideLeft");
           }
           action?.apply();
+
+          if(elmnt)
+            for(const child of content.childNodes)
+              elmnt.appendChild(child.cloneNode(true));
+          content.remove();
         }
-        if(this.status == 404) {LoadPage("404", content, afterContent)}
+
+        // Talvez remova
+        if(this.status == 404){
+            await LoadPage("404", content);
+        }
+                
+        includeHTML();
+      }
+    }
+
+    xhttp.open("GET", file, true);
+    xhttp.send();
+}
+
+async function LoadLayout(page, content, action = null){
+    var file = "data/layout/" + page + ".html";
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function(){
+      if(this.readyState == 4) {
+        var elmnt = content.parentNode;
+        if(this.status == 200) {
+          content.innerHTML += this.responseText;
+          SelectMenuItem(page);
+          ChangeTitle(page);
+
+          const urlParams = new URLSearchParams(window.location.search);
+          let searchParams = new URLSearchParams(urlParams);
+          if(searchParams.get("post")){
+            if(elmnt)
+              elmnt.setAttribute("class", "SlideLeft");
+          }
+          action?.apply();
+        }
   
         for(const child of content.childNodes)
           elmnt.appendChild(child.cloneNode(true));
-        content.remove();
+        
+        
         includeHTML();
       }
     }
