@@ -9,6 +9,8 @@ var Loading = true;
 supabase = null;
 toastTimer = null;
 supabaseUser = null;
+ChangeTitle(title);
+
 
 async function login(){
     if(Email && Password && Submit){
@@ -55,6 +57,7 @@ function ShowToast(text){
 window.onload = async function(){
     includeHTML();
 }
+
 
 async function includeHTML(){
     const { data: { user } } = await supabase.auth.getUser();
@@ -256,18 +259,17 @@ function ChangeTitle(newtitle, header){
 
 async function LoadBlog(id, content, index = 0){
     content.removeAttribute("w3-include-html");
-    var total = 10;
-    var startpage = total * index;
-    var endpage = total * index + 1;
+    var startpage = totalPosts * index;
+    var endpage = totalPosts * index + 1;
     const { data, error } = await supabase
     .from('blog')
-    .select()
+    .select('id,title,date')
     .range(startpage, endpage);
     if(data.length > 0){
         var afterContent = () =>{
             var content = "<h1>Ultimos posts</h1>";
             for(i = 0; i < data.length; i++){
-                content += '<a href="?post=' +data[i].id +'">'+data[i].title+'</a></p><hr/><div class="CardDateTime">13:46 18/03/2021</div></div>';
+                content += '<a href="?post=' +data[i].id +'">'+data[i].title+'</a></p><hr/><div class="CardDateTime">' + new Date(data[0].date) + '</div></div>';
             }
             var next = index;
             var back = index;
@@ -277,7 +279,7 @@ async function LoadBlog(id, content, index = 0){
             if(back >= 0)
                 content += '<a class="button" href="?page=blog&row=' + back + '">Back</a>';
 
-            if(next == total)
+            if(next == totalPosts)
                 content += '<a href="?page=blog&row=' + next + '">Next</a>';
 
             document.getElementsByClassName("Feed").item(0).innerHTML = content;
