@@ -87,7 +87,11 @@ async function includeHTML(){
             if(searchParams.get("page") == "blog")
                 await LoadBlog(searchParams.get("page"), content, searchParams.get("row") ? searchParams.get("row") : 0)
             else
+            if(searchParams.get("page") == "post")
+                await LoadPostContent(searchParams.get("id"), content);
+            else
                 await LoadPage(searchParams.get("page"), content);
+            
             return;
         }else
         if(searchParams.get("post") && page == "data/pages/home.html"){
@@ -120,13 +124,20 @@ async function includeHTML(){
     }
     LoadSwipe();
 
-
-    
     if(user){
+        const urlParams = new URLSearchParams(window.location.search);
+        let searchParams = new URLSearchParams(urlParams);
+
         var SignIn = document.getElementById("SignIn");
         if(SignIn){
-            SignIn.setAttribute("onclick","window.location.href='?page=perfil';");
-            SignIn.setAttribute("id","Perfil");
+            SignIn.setAttribute("onclick","window.location.href='?page=post';");
+            SignIn.setAttribute("id","Edit");
+        }
+        var NoButton = document.getElementById("NoButton");
+        if(NoButton){
+            if(searchParams.get("post"))
+            NoButton.setAttribute("onclick","window.location.href='?page=post&id="+searchParams.get("post")+"';");
+            NoButton.setAttribute("id","Edit");
         }
     }
 }
@@ -270,11 +281,14 @@ function ChangeTitle(newtitle, header){
 async function LoadBlog(id, content, index = 0){
     content.removeAttribute("w3-include-html");
     var startpage = totalPosts * index;
-    var endpage = totalPosts * index + 1;
+    var endpage = totalPosts * (index + 1);
     const { data, error } = await supabase
     .from('blog')
     .select('id,title,date')
+    .order('id', { ascending: false })
     .range(startpage, endpage);
+
+
     if(data.length > 0){
         var afterContent = () =>{
             var card = document.getElementsByClassName("Card").item(0);
@@ -403,4 +417,107 @@ async function LoadLayout(page, content, action = null){
 
     xhttp.open("GET", file, true);
     xhttp.send();
+}
+
+function updateCounter(){
+    const textArea = document.getElementById('textArea');
+    const charCounter = document.getElementById('charCounter');
+    const title = document.getElementById('titlepage');
+    charCounter.textContent = `${textArea.value.length}/500`;
+    document.getElementsByClassName("title").item(0).innerHTML = title.value != "" ? title.value : "Title";
+    document.getElementsByClassName("content").item(0).innerHTML = textArea.value != "" ? textArea.value : "Enter your text here...";
+    document.getElementsByClassName("CardDateTime").item(0).innerHTML = new Date();
+}
+
+function OpenEditor(open){
+    if(open){
+        Editor.style.display = "block";
+        Preview.style.display = "none";
+        editorbtn.style.background = "var(--ShadowColor)";
+        previewbtn.style.background = "var(--PanelBackground)";
+    }else{
+        Editor.style.display = "none";
+        Preview.style.display = "block";
+        editorbtn.style.background = "var(--PanelBackground)";
+        previewbtn.style.background = "var(--ShadowColor)";
+    }
+}
+
+async function LoadPostContent(id, content){
+    const { data: { user } } = await supabase.auth.getUser();
+    if(!user)
+        window.location.href='/?page=blog';
+    if(id){
+        const { data, error } = await supabase
+        .from('blog')
+        .select()
+        .eq('id', id);
+        if(data[0]){
+            var afterContent = () =>{
+                const textArea = document.getElementById('textArea');
+                const title = document.getElementById('titlepage');
+                textArea.value = data[0].content;
+                title.value = data[0].title;
+                updateCounter();
+            }
+            LoadPage("post", content, afterContent);
+        }
+    }else
+        LoadPage("post", content);
+}
+
+
+async function Publish(){
+    const textArea = document.getElementById('textArea');
+    const title = document.getElementById('titlepage');
+    const urlParams = new URLSearchParams(window.location.search);
+    let searchParams = new URLSearchParams(urlParams);
+
+    alert("Please read this important message.");
+    let userConfirmed = confirm("Do you agree with the terms?");
+    if (userConfirmed) {
+        alert("Thank you for agreeing!");
+    } else {
+        alert("You did not agree.");
+    }
+
+
+    if(searchParams.get("id")){
+        // update
+        const id = searchParams.get("id");
+        const { error } = await supabase
+        .from('blog')
+        .update({ title: title.value, content: textArea.value })
+        .eq('id', id)
+        window.location.href='?post=' + id;
+    }else{
+        // insert
+        const { data, error } = await supabase
+        .from('blog')
+        .insert([
+          { title: title.value, content: textArea.value },
+        ])
+        .select();
+        window.location.href='?post=' + data[0].id;
+    }
+}
+
+async function Delete(){
+    const urlParams = new URLSearchParams(window.location.search);
+    let searchParams = new URLSearchParams(urlParams);
+
+    alert("Please read this important message.");
+    let userConfirmed = confirm("Do you agree with the terms?");
+    if (userConfirmed) {
+        alert("Thank you for agreeing!");
+    } else {
+        alert("You did not agree.");
+    }
+    if(searchParams.get("id")){
+        const response = await supabase
+        .from('blog')
+        .delete()
+        .eq('id', searchParams.get("id"));
+        window.location.href='?page=blog';
+    }
 }
