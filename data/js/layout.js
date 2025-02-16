@@ -473,15 +473,6 @@ async function Publish(){
     const urlParams = new URLSearchParams(window.location.search);
     let searchParams = new URLSearchParams(urlParams);
 
-    alert("Please read this important message.");
-    let userConfirmed = confirm("Do you agree with the terms?");
-    if (userConfirmed) {
-        alert("Thank you for agreeing!");
-    } else {
-        alert("You did not agree.");
-    }
-
-
     if(searchParams.get("id")){
         // update
         const id = searchParams.get("id");
@@ -506,13 +497,6 @@ async function Delete(){
     const urlParams = new URLSearchParams(window.location.search);
     let searchParams = new URLSearchParams(urlParams);
 
-    alert("Please read this important message.");
-    let userConfirmed = confirm("Do you agree with the terms?");
-    if (userConfirmed) {
-        alert("Thank you for agreeing!");
-    } else {
-        alert("You did not agree.");
-    }
     if(searchParams.get("id")){
         const response = await supabase
         .from('blog')
