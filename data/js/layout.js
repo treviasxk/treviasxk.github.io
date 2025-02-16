@@ -275,11 +275,10 @@ async function LoadBlog(id, content, index = 0){
             next++;
 
             if(back >= 0)
-                content += '<a class="button" href="?page=blog&row=' + back + '"> Back</a>';
+                content += '<a class="button" href="?page=blog&row=' + back + '">Back</a>';
 
-            var x = data.length;
-            if(next < x--)
-                content += '<a href="?page=blog&row=' + next + '"> Next</a>';
+            if(next == total)
+                content += '<a href="?page=blog&row=' + next + '">Next</a>';
 
             document.getElementsByClassName("Feed").item(0).innerHTML = content;
             
