@@ -71,6 +71,10 @@ body > video {
     object-fit: cover;
 }
 
+ video {
+    width: 100%;
+}
+
 #ScreenLoading {
     display: table;
     z-index: 1;

@@ -109,7 +109,7 @@ hr{
     margin: 10px 0px;
 }
 
-.Card > p, .Card > ul > li, .Card > li {
+.Card > * > p, .Card > p, .Card > ul > li, .Card > li {
     text-align: justify;
     margin: 0px;
 }
