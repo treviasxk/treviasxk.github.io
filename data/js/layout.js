@@ -454,7 +454,13 @@ async function Publish(){
     const title = document.getElementById('titlepage');
     const urlParams = new URLSearchParams(window.location.search);
     let searchParams = new URLSearchParams(urlParams);
-
+    console.log("'"+title.value+"'");
+    if(title.value.length < 5)
+        ShowToast("The title cannot be less than 5 characteres!")
+    else
+    if(title.value == "")
+        ShowToast("The title cannot be empty!")
+    else
     if(searchParams.get("post") && searchParams.get("post") != 0){
         // update
         const id = searchParams.get("post");
