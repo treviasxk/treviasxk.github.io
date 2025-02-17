@@ -337,7 +337,7 @@ async function LoadPost(id, content){
         }else{
             ChangeTitle(data[0].title, "Post");
             document.getElementsByClassName("title").item(0).innerText = data[0].title;
-            document.getElementsByClassName("content").item(0).innerHTML = data[0].content;
+            document.getElementsByClassName("content").item(0).innerHTML = markdownContent(data[0].content);
             document.getElementsByClassName("CardDateTime").item(0).innerText = new Date(data[0].date);
             if(user){
                 const title = document.getElementById('titlepage');
@@ -346,12 +346,14 @@ async function LoadPost(id, content){
                 pin.checked = data[0].pin;
                 textArea.innerHTML = data[0].content;
                 title.value = data[0].title;
-                updateCounter();
             }
         }
-        const quill = new Quill("#editor", {
-            theme: "snow",
-        });
+
+        if(user){
+            const quill = new Quill("#editor", {
+                theme: "snow",
+            });
+        }
     }
     
 
@@ -436,14 +438,14 @@ function updateCounter(){
     document.getElementsByClassName("title").item(0).innerHTML += title.value != "" ? title.value : "Title";
 
 
-    var x = markdownToImg(textArea.innerHTML);
+    var x = markdownContent(textArea.innerHTML);
     
 
     document.getElementsByClassName("content").item(0).innerHTML = x;
     document.getElementsByClassName("CardDateTime").item(0).innerHTML = new Date();
 }
 
-function markdownToImg(markdown) {
+function markdownContent(markdown) {
     let html = markdown;
 
     // Img
