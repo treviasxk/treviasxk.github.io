@@ -323,7 +323,8 @@ async function LoadPost(id, content){
     .select()
     .eq('id', id);
     const { data: { user } } = await supabase.auth.getUser();
-
+    const myArray = /d(b+)d/g.exec("cdbbdbsbz");
+    console.log(`The value of lastIndex is ${/d(b+)d/g.lastIndex}`);
 
     var afterContent = ()=>{
         if(user)
@@ -365,6 +366,7 @@ async function LoadPost(id, content){
     }
 }
 
+
 function SelectMenuItem(page){
     var navigate = document.querySelectorAll('.MenuItem');
     for(const child of navigate)
@@ -397,8 +399,6 @@ async function LoadPage(page, content, action = null){
         if(this.status == 404){
             await LoadPage("404", content);
         }
-                
-        includeHTML();
       }
     }
 
@@ -430,15 +430,48 @@ function updateCounter(){
     textArea = document.getElementsByClassName('ql-editor').item(0);
     if(!textArea)
         textArea = document.getElementById('editor');
-    const charCounter = document.getElementById('charCounter');
     const title = document.getElementById('titlepage');
     const pin = document.getElementById("pinpost");
     document.getElementsByClassName("title").item(0).innerHTML = pin.checked ? '<div id="Pin"></div>' : "";
     document.getElementsByClassName("title").item(0).innerHTML += title.value != "" ? title.value : "Title";
 
-    document.getElementsByClassName("content").item(0).innerHTML = textArea.innerHTML != "" ? textArea.innerHTML : "Enter your text here...";
+
+    var x = markdownToImg(textArea.innerHTML);
+    
+
+    document.getElementsByClassName("content").item(0).innerHTML = x;
     document.getElementsByClassName("CardDateTime").item(0).innerHTML = new Date();
-    charCounter.textContent = `${textArea.textContent.length}/5000`;
+}
+
+function markdownToImg(markdown) {
+    let html = markdown;
+
+    // Img
+    var regex = /https?:\/\/[^\s"'<>]+?\.(jpe?g|png|gif)(\?[^"\s]*)?/g;
+    var match = markdown.match(regex);
+    
+    if(match)
+    for(const item in match)
+        html = html.replaceAll("<p>" + match[item] + "</p>", `<img src="${match[item]}"></img>`)
+    
+    // video
+    var regex = /https?:\/\/[^\s]+\.(mkv|mp4|webm)(\?[^\s<>]*)?/g;
+    var match = markdown.match(regex);
+    
+    if(match)
+    for(const item in match)
+        html = html.replaceAll("<p>" + match[item] + "</p>", `<video autoplay="" muted="" loop="" disablepictureinpicture="" width="100%" controls><source src="${match[item]}"></video>`)
+
+    // Youtube
+    regex = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/g;
+    match = markdown.match(regex);
+
+    if(match)
+    for(const item in match){
+        var id = match[item].replace("https://www.youtube.com/watch?v=","");
+        html = html.replaceAll("<p>" +match[item] + "</p>", `<iframe width="100%" height="415" src="https://www.youtube.com/embed/${id}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`);
+    }
+    return html; // Return original string if no match is found
 }
 
 function OpenEditor(open){

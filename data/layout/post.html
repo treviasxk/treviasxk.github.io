@@ -21,21 +21,20 @@
 
     <!-- Editor -->
     <div id="Editor" class="Card" style="display: none;">
-        <input required id="titlepage" type="text" placeholder="Title" oninput="updateCounter()"
+        <input required id="titlepage" type="text" placeholder="Title"
             style="border-radius: 5px; border: var(--ShadowColor) 1px solid; width: calc(100% - 22px); padding: 10px; background-color: #000000; color: var(--TextColor)" />
         <br />
         <br />
-        <input style="color: var(--TextColor); background-color: #000000;" type="checkbox" id="pinpost" value="Pin" oninput="updateCounter()">
+        <input style="color: var(--TextColor); background-color: #000000;" type="checkbox" id="pinpost" value="Pin">
         <label for="Pin">Pin post</label>
         <br />
         <br />
         <!-- Create the editor container -->
-        <div id="editor" style="min-height: 500px;" oninput="updateCounter()">
+        <div id="editor" style="min-height: 500px;">
             <p>Hello World!</p>
             <p>Some initial <strong>bold</strong> text</p>
             <p><br /></p>
         </div>
-        <div id="charCounter">0/5000</div>
         <div style="margin-top: 10px; text-align: center;display: flex;background: var(--PanelBackground);justify-content: space-around;">
             <br/>
             <div style="border-radius: 5px;cursor: pointer; text-align: center; display: inline-block; width: 40%; padding: 10px; background-color: var(--PrimaryColor);"
