@@ -79,7 +79,7 @@ async function includeHTML(){
         const urlParams = new URLSearchParams(window.location.search);
         let searchParams = new URLSearchParams(urlParams);
 
-        if(searchParams.get("post"))
+        if(searchParams.get("post") && searchParams.get("post") != 0)
             if(page == "data/layout/appbar.html")
                 page = "data/layout/appbar_backpage.html";
 
@@ -87,11 +87,7 @@ async function includeHTML(){
             if(searchParams.get("page") == "blog")
                 await LoadBlog(searchParams.get("page"), content, searchParams.get("row") ? searchParams.get("row") : 0)
             else
-            if(searchParams.get("page") == "post")
-                await LoadPostContent(searchParams.get("id"), content);
-            else
                 await LoadPage(searchParams.get("page"), content);
-            
             return;
         }else
         if(searchParams.get("post") && page == "data/pages/home.html"){
@@ -130,14 +126,12 @@ async function includeHTML(){
 
         var SignIn = document.getElementById("SignIn");
         if(SignIn){
-            SignIn.setAttribute("onclick","window.location.href='?page=post';");
-            SignIn.setAttribute("id","Edit");
-        }
-        var NoButton = document.getElementById("NoButton");
-        if(NoButton){
-            if(searchParams.get("post"))
-            NoButton.setAttribute("onclick","window.location.href='?page=post&id="+searchParams.get("post")+"';");
-            NoButton.setAttribute("id","Edit");
+            if(searchParams.get("post") && searchParams.get("post") == 0){
+                SignIn.setAttribute("id","NoButton");
+            }else{
+                SignIn.setAttribute("onclick","window.location.href='?post=0';");
+                SignIn.setAttribute("id","Edit");
+            }
         }
     }
 }
@@ -311,8 +305,6 @@ async function LoadBlog(id, content, index = 0){
 
 
         await LoadPage("blog", content, afterContent);
-
-        document.getElementById("Content").classList.add("SlideLeft");
     }else{
         await LoadPage("404", content);
     }
@@ -324,22 +316,43 @@ async function LoadPost(id, content){
     .from('blog')
     .select()
     .eq('id', id);
-    if(data[0]){
-        /*
-        const { data: { user } } = await supabase.auth.getUser();
-        console.log(user);*/
-            
-        var afterContent = ()=>{
+    const { data: { user } } = await supabase.auth.getUser();
+
+
+    var afterContent = ()=>{
+        if(user)
+            document.getElementById("SelectMode").style.display = "flex";
+        if(id != 0){
+            ChangeTitle(data[0].title, "Post");
             document.getElementsByClassName("title").item(0).innerText = data[0].title;
             document.getElementsByClassName("content").item(0).innerHTML = data[0].content;
             document.getElementsByClassName("CardDateTime").item(0).innerText = new Date(data[0].date);
-            ChangeTitle(data[0].title, "Post");
+            const title = document.getElementById('titlepage');
+            const textArea = document.getElementById('editor');
+            textArea.innerHTML = data[0].content;
+            title.value = data[0].title;
+            updateCounter();
+        }else{
+            Editor.style.display = "block";
+            Preview.style.display = "none";
+            editorbtn.style.background = "var(--ShadowColor)";
+            previewbtn.style.background = "var(--PanelBackground)";
         }
+        const quill = new Quill("#editor", {
+            theme: "snow",
+        });
+    }
+    
 
+
+    if(data[0]){
         await LoadLayout("post", content, afterContent);
         document.getElementById("Content").classList.add("SlideLeft");
     }else{
-        await LoadPage("404", content, afterContent);
+        if(id == 0 && user){
+            await LoadLayout("post", content, afterContent);
+        }else
+            await LoadPage("404", content, afterContent);
     }
 }
 
@@ -398,14 +411,6 @@ async function LoadLayout(page, content, action = null){
           content.innerHTML += this.responseText;
           SelectMenuItem(page);
           ChangeTitle(page);
-
-          const urlParams = new URLSearchParams(window.location.search);
-          let searchParams = new URLSearchParams(urlParams);
-          if(searchParams.get("post")){
-            if(elmnt)
-              elmnt.setAttribute("class", "SlideLeft");
-          }
-
           action?.apply();
           content.remove();
         }
@@ -420,13 +425,13 @@ async function LoadLayout(page, content, action = null){
 }
 
 function updateCounter(){
-    const textArea = document.getElementById('textArea');
+    const textArea = document.getElementById('editor');
     const charCounter = document.getElementById('charCounter');
     const title = document.getElementById('titlepage');
-    charCounter.textContent = `${textArea.value.length}/500`;
     document.getElementsByClassName("title").item(0).innerHTML = title.value != "" ? title.value : "Title";
-    document.getElementsByClassName("content").item(0).innerHTML = textArea.value != "" ? textArea.value : "Enter your text here...";
+    document.getElementsByClassName("content").item(0).innerHTML = textArea.innerHTML != "" ? textArea.innerHTML : "Enter your text here...";
     document.getElementsByClassName("CardDateTime").item(0).innerHTML = new Date();
+    charCounter.textContent = `${textArea.textContent.length}/5000`;
 }
 
 function OpenEditor(open){
@@ -443,42 +448,19 @@ function OpenEditor(open){
     }
 }
 
-async function LoadPostContent(id, content){
-    const { data: { user } } = await supabase.auth.getUser();
-    if(!user)
-        window.location.href='/?page=blog';
-    if(id){
-        const { data, error } = await supabase
-        .from('blog')
-        .select()
-        .eq('id', id);
-        if(data[0]){
-            var afterContent = () =>{
-                const textArea = document.getElementById('textArea');
-                const title = document.getElementById('titlepage');
-                textArea.value = data[0].content;
-                title.value = data[0].title;
-                updateCounter();
-            }
-            LoadPage("post", content, afterContent);
-        }
-    }else
-        LoadPage("post", content);
-}
-
 
 async function Publish(){
-    const textArea = document.getElementById('textArea');
+    const textArea = document.getElementsByClassName('ql-editor').item(0);
     const title = document.getElementById('titlepage');
     const urlParams = new URLSearchParams(window.location.search);
     let searchParams = new URLSearchParams(urlParams);
 
-    if(searchParams.get("id")){
+    if(searchParams.get("post") && searchParams.get("post") != 0){
         // update
-        const id = searchParams.get("id");
+        const id = searchParams.get("post");
         const { error } = await supabase
         .from('blog')
-        .update({ title: title.value, content: textArea.value })
+        .update({ title: title.value, content: textArea.innerHTML })
         .eq('id', id)
         window.location.href='?post=' + id;
     }else{
@@ -486,7 +468,7 @@ async function Publish(){
         const { data, error } = await supabase
         .from('blog')
         .insert([
-          { title: title.value, content: textArea.value },
+          { title: title.value, content: textArea.innerHTML },
         ])
         .select();
         window.location.href='?post=' + data[0].id;
@@ -497,11 +479,11 @@ async function Delete(){
     const urlParams = new URLSearchParams(window.location.search);
     let searchParams = new URLSearchParams(urlParams);
 
-    if(searchParams.get("id")){
+    if(searchParams.get("post")){
         const response = await supabase
         .from('blog')
         .delete()
-        .eq('id', searchParams.get("id"));
+        .eq('id', searchParams.get("post"));
         window.location.href='?page=blog';
     }
 }
