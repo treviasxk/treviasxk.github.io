@@ -19,6 +19,12 @@ a {
     font-weight: bold;
     text-decoration: none;
 }
+.Pin {
+    color: var(--SegundaryColor);
+}
+.Pin:hover{
+    color: var(--PrimaryColor);
+}
 
 a:hover{
     color: var(--PrimaryColor);
@@ -41,7 +47,6 @@ hr{
     margin-top: 25px;
     border:var(--ShadowColor) 1px solid;
 }
-
 
 .Footer {
     display: table;
@@ -101,6 +106,32 @@ hr{
     background: var(--PanelBackground);
 }
 
+li[data-list=bullet] > .ql-ui:before{
+    content: '\2022';
+}
+
+li[data-list=ordered] > .ql-ui::before{
+    display: inline-block;
+    content: counter(item) ". ";
+    counter-increment: item;
+
+}
+.content > ol > li > .ql-ui:before {
+    display: inline-block;
+    margin-left: -1.5em;
+    margin-right: .3em;
+    text-align: right;
+    white-space: nowrap;
+    width: 1.2em;
+}
+.content > ol {
+    counter-reset: item;
+}
+
+.content > ol > li {
+    list-style-type: none;
+}
+
 .Card > * > img, .Card > img, .Card > video, .Card > a > img {
     text-align: center;
     max-width: 100%;
@@ -113,7 +144,7 @@ hr{
     margin: 0px;
 }
 
-.Card > p > a {
+.Card > p > a, .content  p >a {
     color: dodgerblue;
 }
 .Card > .title {

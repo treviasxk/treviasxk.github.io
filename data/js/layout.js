@@ -99,11 +99,11 @@ async function includeHTML(){
                     if(this.readyState == 4) {
                         var elmnt = content.parentNode;
                         if(this.status == 200){
-                        content.innerHTML = this.responseText;
-                        if(page == "data/pages/home.html"){
-                            SelectMenuItem("home");
-                            ChangeTitle("Home");
-                        }
+                            content.innerHTML = this.responseText;
+                            if(page == "data/pages/home.html"){
+                                SelectMenuItem("home");
+                                ChangeTitle("Home");
+                            }
                         }
                         if(this.status == 404) {LoadPage("404", content);}
                         for(const child of content.childNodes)
@@ -276,38 +276,44 @@ async function LoadBlog(id, content, index = 0){
     content.removeAttribute("w3-include-html");
     var startpage = totalPosts * index;
     var endpage = totalPosts * (index + 1);
-    const { data, error } = await supabase
+
+    var { data } = await supabase
     .from('blog')
     .select('id,title,date')
+    .eq('pin', true)
+    .order('id', { ascending: false });
+
+    var dataPin = data;
+
+    var { data } = await supabase
+    .from('blog')
+    .select('id,title,date')
+    .eq('pin', false)
     .order('id', { ascending: false })
     .range(startpage, endpage);
 
+    var afterContent = () =>{
+        var card = document.getElementsByClassName("Card").item(0);
 
-    if(data.length > 0){
-        var afterContent = () =>{
-            var card = document.getElementsByClassName("Card").item(0);
-                for(i = 0; i < data.length; i++)
-                    card.innerHTML += '<a href="?post=' +data[i].id +'">'+data[i].title+'</a></p><hr/><div class="CardDateTime">' + new Date(data[0].date) + '</div></div>';
-    
-                var next = index;
-                var back = index;
-                back--;
-                next++;
-    
-                if(back >= 0)
-                    card.innerHTML += '<a class="button" href="?page=blog&row=' + back + '">Back</a>';
-    
-                if(next == totalPosts)
-                    card.innerHTML += '<a href="?page=blog&row=' + next + '">Next</a>';
-            
+        for(i = 0; i < dataPin.length; i++)
+            card.innerHTML += '<div id="Pin"></div><a class="Pin" href="?post=' +dataPin[i].id +'">'+dataPin[i].title+'</a><hr/><div class="CardDateTime">' + new Date(dataPin[0].date) + '</div></div>';
 
-        }
+        for(i = 0; i < data.length; i++)
+            card.innerHTML += '<a href="?post=' +data[i].id +'">'+data[i].title+'</a><hr/><div class="CardDateTime">' + new Date(data[0].date) + '</div></div>';
 
+        var next = index;
+        var back = index;
+        back--;
+        next++;
 
-        await LoadPage("blog", content, afterContent);
-    }else{
-        await LoadPage("404", content);
+        if(back >= 0)
+            card.innerHTML += '<a class="button" href="?page=blog&row=' + back + '">Back</a>';
+
+        if(next == totalPosts)
+            card.innerHTML += '<a href="?page=blog&row=' + next + '">Next</a>';
     }
+
+    await LoadPage("blog", content, afterContent);
 }
 
 async function LoadPost(id, content){
@@ -322,28 +328,31 @@ async function LoadPost(id, content){
     var afterContent = ()=>{
         if(user)
             document.getElementById("SelectMode").style.display = "flex";
-        if(id != 0){
-            ChangeTitle(data[0].title, "Post");
-            document.getElementsByClassName("title").item(0).innerText = data[0].title;
-            document.getElementsByClassName("content").item(0).innerHTML = data[0].content;
-            document.getElementsByClassName("CardDateTime").item(0).innerText = new Date(data[0].date);
-            const title = document.getElementById('titlepage');
-            const textArea = document.getElementById('editor');
-            textArea.innerHTML = data[0].content;
-            title.value = data[0].title;
-            updateCounter();
-        }else{
+        if(id == 0){
             Editor.style.display = "block";
             Preview.style.display = "none";
             editorbtn.style.background = "var(--ShadowColor)";
             previewbtn.style.background = "var(--PanelBackground)";
+        }else{
+            ChangeTitle(data[0].title, "Post");
+            document.getElementsByClassName("title").item(0).innerText = data[0].title;
+            document.getElementsByClassName("content").item(0).innerHTML = data[0].content;
+            document.getElementsByClassName("CardDateTime").item(0).innerText = new Date(data[0].date);
+            if(user){
+                const title = document.getElementById('titlepage');
+                const textArea = document.getElementById('editor');
+                const pin = document.getElementById('pinpost');
+                pin.checked = data[0].pin;
+                textArea.innerHTML = data[0].content;
+                title.value = data[0].title;
+                updateCounter();
+            }
         }
         const quill = new Quill("#editor", {
             theme: "snow",
         });
     }
     
-
 
     if(data[0]){
         await LoadLayout("post", content, afterContent);
@@ -352,7 +361,7 @@ async function LoadPost(id, content){
         if(id == 0 && user){
             await LoadLayout("post", content, afterContent);
         }else
-            await LoadPage("404", content, afterContent);
+            await LoadPage("404", content);
     }
 }
 
@@ -381,11 +390,7 @@ async function LoadPage(page, content, action = null){
               elmnt.setAttribute("class", "SlideLeft");
           }
           action?.apply();
-
-          if(elmnt)
-            for(const child of content.childNodes)
-              elmnt.appendChild(child.cloneNode(true));
-          content.remove();
+          CloseScreenLoading();
         }
 
         // Talvez remova
@@ -412,11 +417,7 @@ async function LoadLayout(page, content, action = null){
           SelectMenuItem(page);
           ChangeTitle(page);
           action?.apply();
-          content.remove();
         }
-  
-        for(const child of content.childNodes)
-          elmnt.appendChild(child.cloneNode(true));
       }
     }
 
@@ -425,10 +426,16 @@ async function LoadLayout(page, content, action = null){
 }
 
 function updateCounter(){
-    const textArea = document.getElementById('editor');
+    var textArea;
+    textArea = document.getElementsByClassName('ql-editor').item(0);
+    if(!textArea)
+        textArea = document.getElementById('editor');
     const charCounter = document.getElementById('charCounter');
     const title = document.getElementById('titlepage');
-    document.getElementsByClassName("title").item(0).innerHTML = title.value != "" ? title.value : "Title";
+    const pin = document.getElementById("pinpost");
+    document.getElementsByClassName("title").item(0).innerHTML = pin.checked ? '<div id="Pin"></div>' : "";
+    document.getElementsByClassName("title").item(0).innerHTML += title.value != "" ? title.value : "Title";
+
     document.getElementsByClassName("content").item(0).innerHTML = textArea.innerHTML != "" ? textArea.innerHTML : "Enter your text here...";
     document.getElementsByClassName("CardDateTime").item(0).innerHTML = new Date();
     charCounter.textContent = `${textArea.textContent.length}/5000`;
@@ -452,6 +459,7 @@ function OpenEditor(open){
 async function Publish(){
     const textArea = document.getElementsByClassName('ql-editor').item(0);
     const title = document.getElementById('titlepage');
+    const pin = document.getElementById('pinpost');
     const urlParams = new URLSearchParams(window.location.search);
     let searchParams = new URLSearchParams(urlParams);
     console.log("'"+title.value+"'");
@@ -466,7 +474,7 @@ async function Publish(){
         const id = searchParams.get("post");
         const { error } = await supabase
         .from('blog')
-        .update({ title: title.value, content: textArea.innerHTML })
+        .update({ title: title.value, content: textArea.innerHTML, pin: pin.checked})
         .eq('id', id)
         window.location.href='?post=' + id;
     }else{
@@ -474,7 +482,7 @@ async function Publish(){
         const { data, error } = await supabase
         .from('blog')
         .insert([
-          { title: title.value, content: textArea.innerHTML },
+          { title: title.value, content: textArea.innerHTML, pin: pin.checked},
         ])
         .select();
         window.location.href='?post=' + data[0].id;

@@ -1,6 +1,6 @@
 <div class="Feed">
     <br />
-     <div id="SelectMode" style="text-align: center;display: flex;background: var(--PanelBackground);justify-content: space-around;">
+     <div id="SelectMode" style="text-align: center;display: none;background: var(--PanelBackground);justify-content: space-around;" onclick="updateCounter()">
         <div id="previewbtn" style="cursor: pointer; text-align: center; display: inline-block; width: 40%; padding: 10px; background-color: var(--ShadowColor);"
         onclick="OpenEditor(false)">
             Preview
@@ -22,7 +22,11 @@
     <!-- Editor -->
     <div id="Editor" class="Card" style="display: none;">
         <input required id="titlepage" type="text" placeholder="Title" oninput="updateCounter()"
-            style="border-radius: 5px; border: var(--ShadowColor) 1px solid; width: calc(100% - 22px); padding: 10px; background-color: #000000; color: #FFFFFF" />
+            style="border-radius: 5px; border: var(--ShadowColor) 1px solid; width: calc(100% - 22px); padding: 10px; background-color: #000000; color: var(--TextColor)" />
+        <br />
+        <br />
+        <input style="color: var(--TextColor); background-color: #000000;" type="checkbox" id="pinpost" value="Pin" oninput="updateCounter()">
+        <label for="Pin">Pin post</label>
         <br />
         <br />
         <!-- Create the editor container -->
