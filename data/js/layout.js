@@ -17,34 +17,8 @@ var Loading = true;
 supabase = null;
 toastTimer = null;
 supabaseUser = null;
+var Authenticated = null;
 ChangeTitle(title);
-
-
-async function login(){
-    if(Email && Password && Submit){
-        if(Email.value == "" || Password.value == "")
-            ShowToast("Please fill in all required fields");
-        else{
-            Email.disabled = true;
-            Password.disabled = true;
-            Submit.disabled = true;
-
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: Email.value,
-                password: Password.value,
-            })
-            if(error == null){
-                window.location.href='/';
-            }else{
-                Email.disabled = false;
-                Password.disabled = false;
-                Submit.disabled = false;
-                Password.value = "";
-                ShowToast("Username or password incorrect!");
-            }
-        }
-    }
-}
 
 
 function ShowToast(text){
@@ -62,14 +36,7 @@ function ShowToast(text){
 }
 
 
-window.onload = async function(){
-    includeHTML();
-}
-
-
-async function includeHTML(){
-    const { data: { user } } = await supabase.auth.getUser();
-
+async function AppMain(){
     var z, i, content, page;
     z = document.getElementsByTagName("div");
     for(i = 0; i < z.length; i++){
@@ -88,7 +55,6 @@ async function includeHTML(){
                 await LoadBlog(searchParams.get("page"), content, searchParams.get("row") ? searchParams.get("row") : 0)
             else
                 await LoadPage(searchParams.get("page"), content);
-            return;
         }else
         if(searchParams.get("post") && page == "data/pages/home.html"){
             await LoadPost(searchParams.get("post"), content);
@@ -109,7 +75,7 @@ async function includeHTML(){
                         for(const child of content.childNodes)
                             elmnt.appendChild(child.cloneNode(true));
                         content.remove();
-                        includeHTML();
+                        AppMain();
                     }
                 }
                 xhttp.open("GET", page, true);
@@ -120,7 +86,7 @@ async function includeHTML(){
     }
     LoadSwipe();
 
-    if(user){
+    if(Authenticated){
         const urlParams = new URLSearchParams(window.location.search);
         let searchParams = new URLSearchParams(urlParams);
 
@@ -159,6 +125,7 @@ function LoadSwipe() {
     }
 };
 
+// Back Page
 function BackPage(){
     document.getElementById("Content").classList.add("SlideRight");
     setTimeout(function() {
@@ -166,7 +133,7 @@ function BackPage(){
     }, 200);
 }
 
-//Fechar ou abrir menu lateral
+// Close or open Menu Navigation
 function OpenNavigation(Open){
     if(Open == false){
         Navigate.style.left = "0px";
@@ -195,14 +162,14 @@ function OpenNavigation(Open){
     }
 }
 
-//Fechar tela de carregamento
+// Close screen loading.
 function CloseScreenLoading(){
     Loading = false;
     document.body.style.overflowY = "visible";
     ScreenLoading.style.display = "none";
 }
 
-//Função pra detectar ação swipe
+// Function to detect action swipe
 function swipedetect(el, callback){
     var touchsurface = el,
     swipedir,
@@ -242,7 +209,7 @@ function swipedetect(el, callback){
     }, false)
 }
 
-//Mostrar e esconder AppBar
+//Show and hide AppBar
 var prevScrollpos = window.pageYOffset;
 window.onscroll = () => {
     if(Loading == false){
@@ -259,6 +226,7 @@ window.onscroll = () => {
     }
 }
 
+// Change title from page and appbar
 function ChangeTitle(newtitle, header){
     newtitle = newtitle[0].toUpperCase() + newtitle.slice(1);
     var elment = document.getElementById("Title");
@@ -277,6 +245,7 @@ async function LoadBlog(id, content, index = 0){
     var startpage = totalPosts * index;
     var endpage = totalPosts * (index + 1);
 
+    // Get posts pinned
     var { data } = await supabase
     .from('blog')
     .select('id,title,date')
@@ -285,6 +254,7 @@ async function LoadBlog(id, content, index = 0){
 
     var dataPin = data;
 
+    // Get posts not pinned
     var { data } = await supabase
     .from('blog')
     .select('id,title,date')
@@ -322,12 +292,9 @@ async function LoadPost(id, content){
     .from('blog')
     .select()
     .eq('id', id);
-    const { data: { user } } = await supabase.auth.getUser();
-    const myArray = /d(b+)d/g.exec("cdbbdbsbz");
-    console.log(`The value of lastIndex is ${/d(b+)d/g.lastIndex}`);
 
     var afterContent = ()=>{
-        if(user)
+        if(Authenticated)
             document.getElementById("SelectMode").style.display = "flex";
         if(id == 0){
             Editor.style.display = "block";
@@ -337,9 +304,9 @@ async function LoadPost(id, content){
         }else{
             ChangeTitle(data[0].title, "Post");
             document.getElementsByClassName("title").item(0).innerText = data[0].title;
-            document.getElementsByClassName("content").item(0).innerHTML = markdownContent(data[0].content);
+            document.getElementsByClassName("content").item(0).innerHTML = EmbedContent(data[0].content);
             document.getElementsByClassName("CardDateTime").item(0).innerText = new Date(data[0].date);
-            if(user){
+            if(Authenticated){
                 const title = document.getElementById('titlepage');
                 const textArea = document.getElementById('editor');
                 const pin = document.getElementById('pinpost');
@@ -349,7 +316,7 @@ async function LoadPost(id, content){
             }
         }
 
-        if(user){
+        if(Authenticated){
             const quill = new Quill("#editor", {
                 theme: "snow",
             });
@@ -361,7 +328,7 @@ async function LoadPost(id, content){
         await LoadLayout("post", content, afterContent);
         document.getElementById("Content").classList.add("SlideLeft");
     }else{
-        if(id == 0 && user){
+        if(id == 0 && Authenticated){
             await LoadLayout("post", content, afterContent);
         }else
             await LoadPage("404", content);
@@ -427,54 +394,7 @@ async function LoadLayout(page, content, action = null){
     xhttp.send();
 }
 
-function updateCounter(){
-    var textArea;
-    textArea = document.getElementsByClassName('ql-editor').item(0);
-    if(!textArea)
-        textArea = document.getElementById('editor');
-    const title = document.getElementById('titlepage');
-    const pin = document.getElementById("pinpost");
-    document.getElementsByClassName("title").item(0).innerHTML = pin.checked ? '<div id="Pin"></div>' : "";
-    document.getElementsByClassName("title").item(0).innerHTML += title.value != "" ? title.value : "Title";
 
-
-    var x = markdownContent(textArea.innerHTML);
-    
-
-    document.getElementsByClassName("content").item(0).innerHTML = x;
-    document.getElementsByClassName("CardDateTime").item(0).innerHTML = new Date();
-}
-
-function markdownContent(markdown) {
-    let html = markdown;
-
-    // Img
-    var regex = /https?:\/\/[^\s"'<>]+?\.(jpe?g|png|gif)(\?[^"\s]*)?/g;
-    var match = markdown.match(regex);
-    
-    if(match)
-    for(const item in match)
-        html = html.replaceAll("<p>" + match[item] + "</p>", `<img src="${match[item]}"></img>`)
-    
-    // video
-    var regex = /https?:\/\/[^\s]+\.(mkv|mp4|webm)(\?[^\s<>]*)?/g;
-    var match = markdown.match(regex);
-    
-    if(match)
-    for(const item in match)
-        html = html.replaceAll("<p>" + match[item] + "</p>", `<video autoplay="" muted="" loop="" disablepictureinpicture="" width="100%" controls><source src="${match[item]}"></video>`)
-
-    // Youtube
-    regex = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/g;
-    match = markdown.match(regex);
-
-    if(match)
-    for(const item in match){
-        var id = match[item].replace("https://www.youtube.com/watch?v=","");
-        html = html.replaceAll("<p>" +match[item] + "</p>", `<iframe width="100%" height="415" src="https://www.youtube.com/embed/${id}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`);
-    }
-    return html; // Return original string if no match is found
-}
 
 function OpenEditor(open){
     if(open){
@@ -487,52 +407,5 @@ function OpenEditor(open){
         Preview.style.display = "block";
         editorbtn.style.background = "var(--PanelBackground)";
         previewbtn.style.background = "var(--ShadowColor)";
-    }
-}
-
-
-async function Publish(){
-    const textArea = document.getElementsByClassName('ql-editor').item(0);
-    const title = document.getElementById('titlepage');
-    const pin = document.getElementById('pinpost');
-    const urlParams = new URLSearchParams(window.location.search);
-    let searchParams = new URLSearchParams(urlParams);
-    console.log("'"+title.value+"'");
-    if(title.value.length < 5)
-        ShowToast("The title cannot be less than 5 characteres!")
-    else
-    if(title.value == "")
-        ShowToast("The title cannot be empty!")
-    else
-    if(searchParams.get("post") && searchParams.get("post") != 0){
-        // update
-        const id = searchParams.get("post");
-        const { error } = await supabase
-        .from('blog')
-        .update({ title: title.value, content: textArea.innerHTML, pin: pin.checked})
-        .eq('id', id)
-        window.location.href='?post=' + id;
-    }else{
-        // insert
-        const { data, error } = await supabase
-        .from('blog')
-        .insert([
-          { title: title.value, content: textArea.innerHTML, pin: pin.checked},
-        ])
-        .select();
-        window.location.href='?post=' + data[0].id;
-    }
-}
-
-async function Delete(){
-    const urlParams = new URLSearchParams(window.location.search);
-    let searchParams = new URLSearchParams(urlParams);
-
-    if(searchParams.get("post")){
-        const response = await supabase
-        .from('blog')
-        .delete()
-        .eq('id', searchParams.get("post"));
-        window.location.href='?page=blog';
     }
 }
