@@ -35,12 +35,13 @@ function EmbedContent(markdown) {
         html = html.replaceAll("<p>" + match[item] + "</p>", `<video autoplay="" muted="" loop="" disablepictureinpicture="" width="100%" controls><source src="${match[item]}"></video>`)
 
     // Youtube
-    regex = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/g;
+    regex = /(?:https?:\/\/)?(?:www\.)?youtu(be\.com\/watch\?v=|\.be\/)([a-zA-Z0-9_-]+)/g;
     match = markdown.match(regex);
 
     if(match)
     for(const item in match){
-        var id = match[item].replace("https://www.youtube.com/watch?v=","");
+console.log(match[item]);
+        var id = match[item].replace("youtu.be/","").replace("youtube.com/watch?v=","").replace("https://","").replace("www.","");
         html = html.replaceAll("<p>" +match[item] + "</p>", `<iframe width="100%" height="415" src="https://www.youtube.com/embed/${id}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`);
     }
     return html; // Return original string if no match is found
