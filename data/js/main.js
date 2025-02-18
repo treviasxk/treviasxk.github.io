@@ -40,7 +40,6 @@ function EmbedContent(markdown) {
 
     if(match)
     for(const item in match){
-console.log(match[item]);
         var id = match[item].replace("youtu.be/","").replace("youtube.com/watch?v=","").replace("https://","").replace("www.","");
         html = html.replaceAll("<p>" +match[item] + "</p>", `<iframe width="100%" height="415" src="https://www.youtube.com/embed/${id}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`);
     }
@@ -79,7 +78,7 @@ async function Publish(){
     const pin = document.getElementById('pinpost');
     const urlParams = new URLSearchParams(window.location.search);
     let searchParams = new URLSearchParams(urlParams);
-    console.log("'"+title.value+"'");
+
     if(title.value.length < 5)
         ShowToast("The title cannot be less than 5 characteres!")
     else
