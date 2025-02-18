@@ -132,8 +132,17 @@ li[data-list=ordered] > .ql-ui::before{
     list-style-type: none;
 }
 
+.content > img {
+    display: block;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    max-width: 100%;
+}
+
 .Card > * > img, .Card > img, .Card > video, .Card > a > img {
-    text-align: center;
+    display: block;
+    margin-left: auto !important;
+    margin-right: auto !important;
     max-width: 100%;
     height: auto;
     margin: 10px 0px;
