@@ -381,6 +381,7 @@ async function LoadPostsBlog(){
         var startpage = totalPosts * pageIndex;
         var endpage = totalPosts * (pageIndex + 1) - 1;
         var query = searchParams.get("q");
+        var Card = document.getElementsByClassName("Card").item(0);
         search.value = query;
 
         if(scrollMaximum <= scrollValue + apiBuffering){
@@ -398,13 +399,13 @@ async function LoadPostsBlog(){
 
             if(data && data[0]){
                 for(i = 0; i < data.length; i++)
-                    document.querySelector("blockquote").innerHTML += (data[i].pin ? '<div id="Pin"></div>' : '') + '<a ' + (data[i].pin ? 'class="Pin"' : '') +' href="?post=' +data[i].id +'">'+data[i].title+'</a><hr/><div class="CardDateTime">' + new Date(data[i].date) + '</div></div>';
+                    Card.innerHTML += (data[i].pin ? '<div id="Pin"></div>' : '') + '<a ' + (data[i].pin ? 'class="Pin"' : '') +' href="?post=' +data[i].id +'">'+data[i].title+'</a><hr/><div class="CardDateTime">' + new Date(data[i].date) + '</div></div>';
                 ++pageIndex;
                 firstRunning = true;
                 LoadPostsBlog();
             }else{
                 if(pageIndex == 0)
-                    document.querySelector("blockquote").innerHTML += "<h2>Not found post</h2>";
+                    Card.innerHTML += "<h2>Not found post</h2>";
                 LoadingContent.style.display = "none";
                 firstRunning = false;
             }
