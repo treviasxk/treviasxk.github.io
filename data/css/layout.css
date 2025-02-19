@@ -164,6 +164,13 @@ video {
     transition: 1s;
 }
 
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin: 10px;
+}
+
 #Submit {
     cursor: pointer;
     color: var(--AppBarText);

@@ -13,6 +13,7 @@ This project is using the [WebAppMobile](https://github.com/treviasxk/WebAppMobi
   - Create/Update/Delete posts from Blog page.
   - Rich Text Editor to posts.
   - Pin posts in blog.
+  - Search posts in Blog page.
   - Embed links Youtube, Image and Video to posts.
   - Scroll infinit load post in blog page.
 

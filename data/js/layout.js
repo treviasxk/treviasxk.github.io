@@ -288,7 +288,7 @@ async function LoadPost(id, content){
     }
     
 
-    if(data[0]){
+    if(data){
         await LoadLayout("post", content, afterContent);
         document.getElementById("Content").classList.add("SlideLeft");
     }else{
@@ -380,6 +380,8 @@ async function LoadPostsBlog(){
         var apiBuffering = (scrollMaximum / 100) * totalPosts;
         var startpage = totalPosts * pageIndex;
         var endpage = totalPosts * (pageIndex + 1) - 1;
+        var query = searchParams.get("q");
+        search.value = query;
 
         if(scrollMaximum <= scrollValue + apiBuffering){
             firstRunning = false;
@@ -388,13 +390,15 @@ async function LoadPostsBlog(){
             var { data } = await supabase
             .from('blog')
             .select('id,pin,title,date')
+            .ilike('title', '%'+search.value+'%')
             .order('pin', {ascending: false})
             .order('id', {ascending: false})
             .range(startpage, endpage);
+            console.log(query);
 
-            if(data[0]){
+            if(data && data[0]){
                 for(i = 0; i < data.length; i++)
-                    document.querySelector("blockquote").innerHTML += (data[i].pin ? '<div id="Pin"></div>' : '') + '<a ' + (data[i].pin ? 'class="Pin"' : '') +' href="?post=' +data[i].id +'">'+data[i].title+'</a><hr/><div class="CardDateTime">' + new Date(data[0].date) + '</div></div>';
+                    document.querySelector("blockquote").innerHTML += (data[i].pin ? '<div id="Pin"></div>' : '') + '<a ' + (data[i].pin ? 'class="Pin"' : '') +' href="?post=' +data[i].id +'">'+data[i].title+'</a><hr/><div class="CardDateTime">' + new Date(data[i].date) + '</div></div>';
                 ++pageIndex;
                 firstRunning = true;
                 LoadPostsBlog();

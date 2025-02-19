@@ -117,6 +117,14 @@ async function Delete(){
     }
 }
 
+function SearchPost(event){
+    if(event.key == "Enter" && searchParams.get("page") == "blog")
+        if(search.value != "")
+            window.location.href = '/?page=blog&q=' + search.value;
+        else
+        window.location.href = '/?page=blog';
+}
+
 
 function RefreshContent(){
     var textArea;

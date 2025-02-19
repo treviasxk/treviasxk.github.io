@@ -1,10 +1,26 @@
 <div class="Feed">
     <div>
         <div style="cursor: pointer; display: inline-block; margin: 20px 0px 10px 10px; padding: 5px; border-radius: 5px; background: var(--ShadowColor); text-align: center;">
-            <div id="Filter" ></div>
+            <div for="btnControl" id="Filter" onclick="FilterItem.style.display = (FilterItem.style.display == 'none' ? 'block' : 'none');"></div>
+              
+            <div id="FilterItem" style="display: none; opacity: 1f; padding: 5px; position: fixed; cursor: auto; border-radius: 5px; margin-top: 10px; width: 400px; background: var(--ShadowColor); z-index: 1;">
+                <input style="color: var(--TextColor); background-color: #000000;" type="checkbox" id="pinpost" value="Pin">
+                <label for="Pin">Changelog</label>
+                <input style="color: var(--TextColor); background-color: #000000;" type="checkbox" id="pinpost" value="Pin">
+                <label for="Pin">Annunces</label>
+                <input style="color: var(--TextColor); background-color: #000000;" type="checkbox" id="pinpost" value="Pin">
+                <label for="Pin">Release</label>
+                <br/>
+                <input style="color: var(--TextColor); background-color: #000000;" type="checkbox" id="pinpost" value="Pin">
+                <label for="Pin">Changelog</label>
+                <input style="color: var(--TextColor); background-color: #000000;" type="checkbox" id="pinpost" value="Pin">
+                <label for="Pin">Annunces</label>
+                <input style="color: var(--TextColor); background-color: #000000;" type="checkbox" id="pinpost" value="Pin">
+                <label for="Pin">Release</label>
+            </div>
         </div>
 
-        <input required id="titlepage" type="text" placeholder="Search..."
+        <input required id="search" onkeypress="SearchPost(event)" type="text" placeholder="Search..."
             style="position: relative; top: -6px;display: inline-block; margin: 10px; border-radius: 5px; border: var(--ShadowColor) 1px solid; width: calc(100% - 122px); padding: 10px; background-color: var(--PanelBackground); color: var(--TextColor)" />
     </div>
     <div class="Card">
