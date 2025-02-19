@@ -18,6 +18,7 @@ a {
     color: var(--TextColor);
     font-weight: bold;
     text-decoration: none;
+    display: inline-block;
 }
 .Pin {
     color: var(--SegundaryColor);
@@ -139,13 +140,16 @@ li[data-list=ordered] > .ql-ui::before{
     max-width: 100%;
 }
 
+h2 > img {
+    display: inline-block !important;
+}
+
 .Card > * > img, .Card > img, .Card > video, .Card > a > img {
     display: block;
     margin-left: auto !important;
     margin-right: auto !important;
     max-width: 100%;
     height: auto;
-    margin: 10px 0px;
 }
 
 .Card > * > p, .Card > p, .Card > ul > li, .Card > li {

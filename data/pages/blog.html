@@ -1,9 +1,16 @@
 <div class="Feed">
-    <!-- <input required id="titlepage" type="text" placeholder="Search..." style="margin: 10px; border-radius: 5px; border: var(--ShadowColor) 1px solid; width: calc(100% - 42px); padding: 10px; background-color: #000000; color: var(--TextColor)" /> -->
+    <div>
+        <div style="cursor: pointer; display: inline-block; margin: 20px 0px 10px 10px; padding: 5px; border-radius: 5px; background: var(--ShadowColor); text-align: center;">
+            <div id="Filter" ></div>
+        </div>
+
+        <input required id="titlepage" type="text" placeholder="Search..."
+            style="position: relative; top: -6px;display: inline-block; margin: 10px; border-radius: 5px; border: var(--ShadowColor) 1px solid; width: calc(100% - 122px); padding: 10px; background-color: var(--PanelBackground); color: var(--TextColor)" />
+    </div>
     <div class="Card">
         <blockquote></blockquote>
         <div id="LoadingContent">
-            <img src="data/img/loading.gif" width="50" height="50" alt="Carregando..."/>
+            <img src="data/img/loading.gif" width="50" height="50" alt="Carregando..." />
         </div>
     </div>
 </div>

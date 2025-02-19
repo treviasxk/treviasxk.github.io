@@ -9,6 +9,9 @@
 // Rederict to /
 const params = window.location.search;
 const path = window.location.pathname;
+const urlParams = new URLSearchParams(window.location.search);
+let searchParams = new URLSearchParams(urlParams);
+
 if(path == "/index.html")
     window.location.href= "/" + params;
 
@@ -51,9 +54,6 @@ async function AppMain(){
         content = z[i];
         page = content.getAttribute("w3-include-html");
 
-        const urlParams = new URLSearchParams(window.location.search);
-        let searchParams = new URLSearchParams(urlParams);
-
         if(searchParams.get("post") && searchParams.get("post") != 0)
             if(page == "data/layout/appbar.html")
                 page = "data/layout/appbar_backpage.html";
@@ -95,9 +95,6 @@ async function AppMain(){
     LoadSwipe();
 
     if(Authenticated){
-        const urlParams = new URLSearchParams(window.location.search);
-        let searchParams = new URLSearchParams(urlParams);
-
         var SignIn = document.getElementById("SignIn");
         if(SignIn){
             if(searchParams.get("post") && searchParams.get("post") == 0){
@@ -250,7 +247,7 @@ function ChangeTitle(newtitle, header){
 
 async function LoadBlog(id, content){
     content.removeAttribute("w3-include-html");
-    await LoadPage("blog", content, LoadPostsBlog);
+    await LoadPage(id, content, LoadPostsBlog);
 }
 
 async function LoadPost(id, content){
@@ -321,8 +318,6 @@ async function LoadPage(page, content, action = null){
           SelectMenuItem(page);
           ChangeTitle(page);
 
-          const urlParams = new URLSearchParams(window.location.search);
-          let searchParams = new URLSearchParams(urlParams);
           if(searchParams.get("post")){
             if(elmnt)
               elmnt.setAttribute("class", "SlideLeft");
@@ -378,7 +373,8 @@ function OpenEditor(open){
 }
 
 async function LoadPostsBlog(){
-    if(firstRunning){
+    const page = searchParams.get("page");
+    if(firstRunning && page == "blog"){
         var scrollValue = this.scrollY + document.documentElement.clientHeight;
         var scrollMaximum = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
         var apiBuffering = (scrollMaximum / 100) * totalPosts;
@@ -403,6 +399,8 @@ async function LoadPostsBlog(){
                 firstRunning = true;
                 LoadPostsBlog();
             }else{
+                if(pageIndex == 0)
+                    document.querySelector("blockquote").innerHTML += "<h2>Not found post</h2>";
                 LoadingContent.style.display = "none";
                 firstRunning = false;
             }
