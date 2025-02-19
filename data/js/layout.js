@@ -14,12 +14,21 @@ if(path == "/index.html")
 
 
 var Loading = true;
-supabase = null;
-toastTimer = null;
-supabaseUser = null;
+var supabase = null;
+var toastTimer = null;
+var supabaseUser = null;
 var Authenticated = null;
+var pageIndex = 0;
+var firstRunning = true;
 ChangeTitle(title);
 
+window.addEventListener("load", function() {
+    AppMain();
+}, false); 
+
+window.addEventListener("scroll", () => {
+    LoadPostsBlog();
+});
 
 function ShowToast(text){
     clearInterval(toastTimer);
@@ -34,7 +43,6 @@ function ShowToast(text){
         clearInterval(toastTimer);
     }, 5000);
 }
-
 
 async function AppMain(){
     var z, i, content, page;
@@ -52,7 +60,7 @@ async function AppMain(){
 
         if(searchParams.get("page") && page == "data/pages/home.html"){
             if(searchParams.get("page") == "blog")
-                await LoadBlog(searchParams.get("page"), content, searchParams.get("row") ? searchParams.get("row") : 0)
+                await LoadBlog(searchParams.get("page"), content)
             else
                 await LoadPage(searchParams.get("page"), content);
         }else
@@ -240,50 +248,9 @@ function ChangeTitle(newtitle, header){
     document.title = newtitle;
 }
 
-async function LoadBlog(id, content, index = 0){
+async function LoadBlog(id, content){
     content.removeAttribute("w3-include-html");
-    var startpage = totalPosts * index;
-    var endpage = totalPosts * (index + 1);
-
-    // Get posts pinned
-    var { data } = await supabase
-    .from('blog')
-    .select('id,title,date')
-    .eq('pin', true)
-    .order('id', { ascending: false });
-
-    var dataPin = data;
-
-    // Get posts not pinned
-    var { data } = await supabase
-    .from('blog')
-    .select('id,title,date')
-    .eq('pin', false)
-    .order('id', { ascending: false })
-    .range(startpage, endpage);
-
-    var afterContent = () =>{
-        var card = document.getElementsByClassName("Card").item(0);
-
-        for(i = 0; i < dataPin.length; i++)
-            card.innerHTML += '<div id="Pin"></div><a class="Pin" href="?post=' +dataPin[i].id +'">'+dataPin[i].title+'</a><hr/><div class="CardDateTime">' + new Date(dataPin[0].date) + '</div></div>';
-
-        for(i = 0; i < data.length; i++)
-            card.innerHTML += '<a href="?post=' +data[i].id +'">'+data[i].title+'</a><hr/><div class="CardDateTime">' + new Date(data[0].date) + '</div></div>';
-
-        var next = index;
-        var back = index;
-        back--;
-        next++;
-
-        if(back >= 0)
-            card.innerHTML += '<a class="button" href="?page=blog&row=' + back + '">Back</a>';
-
-        if(next == totalPosts)
-            card.innerHTML += '<a href="?page=blog&row=' + next + '">Next</a>';
-    }
-
-    await LoadPage("blog", content, afterContent);
+    await LoadPage("blog", content, LoadPostsBlog);
 }
 
 async function LoadPost(id, content){
@@ -407,5 +374,38 @@ function OpenEditor(open){
         Preview.style.display = "block";
         editorbtn.style.background = "var(--PanelBackground)";
         previewbtn.style.background = "var(--ShadowColor)";
+    }
+}
+
+async function LoadPostsBlog(){
+    if(firstRunning){
+        var scrollValue = this.scrollY + document.documentElement.clientHeight;
+        var scrollMaximum = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
+        var apiBuffering = (scrollMaximum / 100) * totalPosts;
+        var startpage = totalPosts * pageIndex;
+        var endpage = totalPosts * (pageIndex + 1) - 1;
+
+        if(scrollMaximum <= scrollValue + apiBuffering){
+            firstRunning = false;
+
+            // Get posts not pinned
+            var { data } = await supabase
+            .from('blog')
+            .select('id,pin,title,date')
+            .order('pin', {ascending: false})
+            .order('id', {ascending: false})
+            .range(startpage, endpage);
+
+            if(data[0]){
+                for(i = 0; i < data.length; i++)
+                    document.querySelector("blockquote").innerHTML += (data[i].pin ? '<div id="Pin"></div>' : '') + '<a ' + (data[i].pin ? 'class="Pin"' : '') +' href="?post=' +data[i].id +'">'+data[i].title+'</a><hr/><div class="CardDateTime">' + new Date(data[0].date) + '</div></div>';
+                ++pageIndex;
+                firstRunning = true;
+                LoadPostsBlog();
+            }else{
+                LoadingContent.style.display = "none";
+                firstRunning = false;
+            }
+        }
     }
 }

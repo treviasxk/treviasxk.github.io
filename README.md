@@ -14,6 +14,7 @@ This project is using the [WebAppMobile](https://github.com/treviasxk/WebAppMobi
   - Rich Text Editor to posts.
   - Pin posts in blog.
   - Embed links Youtube, Image and Video to posts.
+  - Scroll infinit load post in blog page.
 
 ## Donate
  - International

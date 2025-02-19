@@ -5,10 +5,9 @@
     Paypal:              trevias@live.com
 */
 
-window.onload = async function(){
-    CheckSession();
-    AppMain();
-}
+window.addEventListener("load", function() {
+    CheckSession
+}, false); 
 
 async function CheckSession() {
     const { data: { session }, } = await supabase.auth.getSession();

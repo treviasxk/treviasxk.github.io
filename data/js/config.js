@@ -11,4 +11,4 @@ github = "treviasxk";
 instagram = "treviasxk";
 x = "treviasxk";
 linkedin = "treviasxk";
-totalPosts = 10;
+totalPosts = 20;
