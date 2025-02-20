@@ -26,12 +26,18 @@ var firstRunning = true;
 ChangeTitle(title);
 
 window.addEventListener("load", function() {
+    CheckSession();
     AppMain();
 }, false); 
 
 window.addEventListener("scroll", () => {
     LoadPostsBlog();
 });
+
+async function CheckSession() {
+    const { data: { session }, } = await supabase.auth.getSession();
+    Authenticated = session ? session.user.aud == "authenticated" : false;
+}
 
 function ShowToast(text){
     clearInterval(toastTimer);
@@ -267,17 +273,21 @@ async function LoadPost(id, content){
             previewbtn.style.background = "var(--PanelBackground)";
         }else{
             ChangeTitle(data[0].title, "Post");
-            document.getElementsByClassName("title").item(0).innerText = data[0].title;
+            document.getElementsByClassName("title").item(0).innerHTML = (data[0].pin ? '<div id="Pin"></div>' : "") + data[0].title;
+            document.getElementsByClassName("title").item(0).innerHTML += CreateTag(data[0].tags); 
             document.getElementsByClassName("content").item(0).innerHTML = EmbedContent(data[0].content);
             document.getElementsByClassName("CardDateTime").item(0).innerText = new Date(data[0].date);
             if(Authenticated){
-                const title = document.getElementById('titlepage');
+                const title = document.getElementById('titlepost');
                 const textArea = document.getElementById('editor');
                 const pin = document.getElementById('pinpost');
+                const tags = document.getElementById('tagspost');
                 pin.checked = data[0].pin;
                 textArea.innerHTML = data[0].content;
                 title.value = data[0].title;
+                tags.value = data[0].tags;
             }
+
         }
 
         if(Authenticated){
@@ -381,25 +391,26 @@ async function LoadPostsBlog(){
         var startpage = totalPosts * pageIndex;
         var endpage = totalPosts * (pageIndex + 1) - 1;
         var query = searchParams.get("q");
+        var tag = searchParams.get("tag");
         var Card = document.getElementsByClassName("Card").item(0);
         search.value = query;
+        tag = tag == null ? "" : tag;
 
         if(scrollMaximum <= scrollValue + apiBuffering){
             firstRunning = false;
-
             // Get posts not pinned
             var { data } = await supabase
             .from('blog')
-            .select('id,pin,title,date')
+            .select('id,tags,pin,title,date')
             .ilike('title', '%'+search.value+'%')
+            .ilike('tags', '%'+tag+'%')
             .order('pin', {ascending: false})
             .order('id', {ascending: false})
             .range(startpage, endpage);
-            console.log(query);
 
             if(data && data[0]){
                 for(i = 0; i < data.length; i++)
-                    Card.innerHTML += (data[i].pin ? '<div id="Pin"></div>' : '') + '<a ' + (data[i].pin ? 'class="Pin"' : '') +' href="?post=' +data[i].id +'">'+data[i].title+'</a><hr/><div class="CardDateTime">' + new Date(data[i].date) + '</div></div>';
+                    Card.innerHTML += (data[i].pin ? '<div id="Pin"></div>' : '') + '<a ' + (data[i].pin ? 'class="Pin"' : '') +' href="?post=' +data[i].id +'">'+data[i].title+'</a><br/>' + await CreateTag(data[i].tags) +'<hr/><div class="CardDateTime">' + new Date(data[i].date) + '</div></div>';
                 ++pageIndex;
                 firstRunning = true;
                 LoadPostsBlog();
@@ -411,4 +422,13 @@ async function LoadPostsBlog(){
             }
         }
     }
+}
+
+function CreateTag(tags){
+    var tag = tags.split(", ");
+    var result = "<br/>";
+    tag.forEach(element => {
+        result += `<div id="Tag" onclick="window.location.href='/?page=blog&tag=${element}'">${element}</div>`;
+    });
+    return result;
 }

@@ -5,15 +5,6 @@
     Paypal:              trevias@live.com
 */
 
-window.addEventListener("load", function() {
-    CheckSession
-}, false); 
-
-async function CheckSession() {
-    const { data: { session }, } = await supabase.auth.getSession();
-    Authenticated = session ? session.user.aud == "authenticated" : false;
-}
-
 function EmbedContent(markdown) {
     let html = markdown;
 
@@ -73,8 +64,9 @@ async function Login(){
 
 async function Publish(){
     const textArea = document.getElementsByClassName('ql-editor').item(0);
-    const title = document.getElementById('titlepage');
+    const title = document.getElementById('titlepost');
     const pin = document.getElementById('pinpost');
+    const tags = document.getElementById('tagspost');
     const urlParams = new URLSearchParams(window.location.search);
     let searchParams = new URLSearchParams(urlParams);
 
@@ -89,7 +81,7 @@ async function Publish(){
         const id = searchParams.get("post");
         const { error } = await supabase
         .from('blog')
-        .update({ title: title.value, content: textArea.innerHTML, pin: pin.checked})
+        .update({ title: title.value, content: textArea.innerHTML, pin: pin.checked, tags: tags.value})
         .eq('id', id)
         window.location.href='?post=' + id;
     }else{
@@ -97,7 +89,7 @@ async function Publish(){
         const { data, error } = await supabase
         .from('blog')
         .insert([
-          { title: title.value, content: textArea.innerHTML, pin: pin.checked},
+          { title: title.value, content: textArea.innerHTML, pin: pin.checked, tags: tags.value},
         ])
         .select();
         window.location.href='?post=' + data[0].id;
@@ -131,11 +123,10 @@ function RefreshContent(){
     textArea = document.getElementsByClassName('ql-editor').item(0);
     if(!textArea)
         textArea = document.getElementById('editor');
-    const title = document.getElementById('titlepage');
+    const title = document.getElementById('titlepost');
     const pin = document.getElementById("pinpost");
-    document.getElementsByClassName("title").item(0).innerHTML = pin.checked ? '<div id="Pin"></div>' : "";
-    document.getElementsByClassName("title").item(0).innerHTML += title.value != "" ? title.value : "Title";
-
+    console.log(pin.checked);
+    document.getElementsByClassName("title").item(0).innerHTML = (pin.checked ? '<div id="Pin"></div>' : "") + (title.value != "" ? title.value : "Title");
 
     var content = EmbedContent(textArea.innerHTML);
     document.getElementsByClassName("content").item(0).innerHTML = content;
