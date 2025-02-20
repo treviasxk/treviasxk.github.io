@@ -5,23 +5,37 @@
     Paypal:              trevias@live.com
 */
 
-function EmbedContent(markdown) {
+function EmbedContent(markdown, textOnly = false){
     let html = markdown;
-
     // Img
     var regex = /https?:\/\/[^\s"'<>]+?\.(jpe?g|png|gif)(\?[^"\s]*)?/g;
     var match = markdown.match(regex);
-    
-    if(match)
+    var image = null;
+
+    if(match){
     for(const item in match)
-        html = html.replaceAll("<p>" + match[item] + "</p>", `<img src="${match[item]}"></img>`)
-    
+        if(textOnly){
+            image ??= `<img  style='height: 100px;width: auto; max-width: 300px;float: left;padding-right: 15px;' src="${match[item]}"/>`;
+            html = html.replaceAll("<p>" + match[item] + "</p>", "");
+            html = RemoveHTMLTags(html);
+        }else
+            html = html.replaceAll("<p>" + match[item] + "</p>", `<img src="${match[item]}"></img>`)
+        if(image){
+            html = image + html;
+        }
+    }
+
     // video
     var regex = /https?:\/\/[^\s]+\.(mkv|mp4|webm)(\?[^\s<>]*)?/g;
     var match = markdown.match(regex);
     
     if(match)
     for(const item in match)
+        if(textOnly){
+            // Remove video link from text
+            html = html.replaceAll("<p>" + match[item] + "</p>", "");
+            html = RemoveHTMLTags(html);
+        }else
         html = html.replaceAll("<p>" + match[item] + "</p>", `<video autoplay="" muted="" loop="" disablepictureinpicture="" width="100%" controls><source src="${match[item]}"></video>`)
 
     // Youtube
@@ -30,10 +44,27 @@ function EmbedContent(markdown) {
 
     if(match)
     for(const item in match){
-        var id = match[item].replace("youtu.be/","").replace("youtube.com/watch?v=","").replace("https://","").replace("www.","");
-        html = html.replaceAll("<p>" +match[item] + "</p>", `<iframe width="100%" height="415" src="https://www.youtube.com/embed/${id}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`);
+        if(textOnly){
+            // Remove youtube link from text
+            html = html.replaceAll("<p>" +match[item] + "</p>","");
+            html = RemoveHTMLTags(html);
+        }else{
+            var id = match[item].replace("youtu.be/","").replace("youtube.com/watch?v=","").replace("https://","").replace("www.","");
+            html = html.replaceAll("<p>" +match[item] + "</p>", `<iframe width="100%" height="415" src="https://www.youtube.com/embed/${id}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`);
+        }
     }
-    return html; // Return original string if no match is found
+
+    return '<p style="margin-top:10px;' + (image ? 'min-height: 100px;' : '') + '">' + html + '</p>'; // Return original string if no match is found
+}
+
+function RemoveHTMLTags(html){
+    var wrapper= document.createElement('p');
+    var result = html.replaceAll("<br>"," ").replaceAll("<br/>"," ").replaceAll("<br />"," ").replaceAll("<p>"," ").replaceAll("</p>"," ").replaceAll("<div>"," ").replaceAll("</div>"," ").replaceAll("<h1>"," ").replaceAll("</h1>"," ").replaceAll("<h2>"," ").replaceAll("</h2>"," ").replaceAll("<h3>"," ").replaceAll("</h3>"," ").replaceAll("<h4>"," ").replaceAll("</h4>"," ").replaceAll("<h5>"," ").replaceAll("</h5>"," ").replaceAll("<h6>"," ").replaceAll("</h6>"," ").replaceAll("<ul>"," ").replaceAll("</ul>"," ").replaceAll("<li>"," ").replaceAll("</li>"," ").replaceAll("<ol>"," ").replaceAll("</ol>"," ").replaceAll("<a>"," ").replaceAll("</a>"," ").replaceAll("<img>"," ").replaceAll("</img>"," ").replaceAll("<video>"," ").replaceAll("</video>"," ").replaceAll("<iframe>"," ").replaceAll("</iframe>"," ");
+
+    wrapper.innerHTML = result;
+    result = wrapper.innerText;
+
+    return result;
 }
 
 async function Login(){

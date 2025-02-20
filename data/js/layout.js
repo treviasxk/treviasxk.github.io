@@ -388,29 +388,28 @@ async function LoadPostsBlog(){
         var scrollValue = this.scrollY + document.documentElement.clientHeight;
         var scrollMaximum = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
         var apiBuffering = (scrollMaximum / 100) * totalPosts;
-        var startpage = totalPosts * pageIndex;
-        var endpage = totalPosts * (pageIndex + 1) - 1;
         var query = searchParams.get("q");
         var tag = searchParams.get("tag");
-        var Card = document.getElementsByClassName("Card").item(0);
+        var Card = document.getElementById("Posts");
         search.value = query;
+        query = query == null ? "" : query;
         tag = tag == null ? "" : tag;
 
         if(scrollMaximum <= scrollValue + apiBuffering){
             firstRunning = false;
             // Get posts not pinned
-            var { data } = await supabase
-            .from('blog')
-            .select('id,tags,pin,title,date')
-            .ilike('title', '%'+search.value+'%')
-            .ilike('tags', '%'+tag+'%')
-            .order('pin', {ascending: false})
-            .order('id', {ascending: false})
-            .range(startpage, endpage);
+
+            var { data } = await supabase.rpc('getblogcontent', {
+                query: `%${query}%`,
+                tag: `%${tag}%`,
+                max: maxCharPosts,
+                range: totalPosts,
+                next: pageIndex * totalPosts,
+            });
 
             if(data && data[0]){
                 for(i = 0; i < data.length; i++)
-                    Card.innerHTML += (data[i].pin ? '<div id="Pin"></div>' : '') + '<a ' + (data[i].pin ? 'class="Pin"' : '') +' href="?post=' +data[i].id +'">'+data[i].title+'</a><br/>' + await CreateTag(data[i].tags) +'<hr/><div class="CardDateTime">' + new Date(data[i].date) + '</div></div>';
+                    Card.innerHTML += `<div class="Card">` + (data[i].pin ? '<div id="Pin"></div>' : '') + '<a ' + (data[i].pin ? 'class="Pin"' : '') +' href="?post=' +data[i].id +'">'+data[i].title+'</a><br/>' + await CreateTag(data[i].tags) +EmbedContent(data[i].content, true)+'<hr/><div class="CardDateTime">' + new Date(data[i].date) + '</div></div></div>';
                 ++pageIndex;
                 firstRunning = true;
                 LoadPostsBlog();

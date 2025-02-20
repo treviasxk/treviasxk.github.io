@@ -12,3 +12,4 @@ instagram = "treviasxk";
 x = "treviasxk";
 linkedin = "treviasxk";
 totalPosts = 20;
+maxCharPosts = 500;
