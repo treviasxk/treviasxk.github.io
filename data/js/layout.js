@@ -409,7 +409,7 @@ async function LoadPostsBlog(){
 
             if(data && data[0]){
                 for(i = 0; i < data.length; i++)
-                    Card.innerHTML += `<div class="Card">` + (data[i].pin ? '<div id="Pin"></div>' : '') + '<a ' + (data[i].pin ? 'class="Pin"' : '') +' href="?post=' +data[i].id +'">'+data[i].title+'</a><br/>' + await CreateTag(data[i].tags) +EmbedContent(data[i].content, true)+'<hr/><div class="CardDateTime">' + new Date(data[i].date) + '</div></div></div>';
+                    Card.innerHTML += `<div class="Card"><a ` + (data[i].pin ? 'class="Pin"' : '') +' href="?post=' +data[i].id +'">' +  (data[i].pin ? '<div id="Pin"></div>' : '') + data[i].title+'</a><br/>' + await CreateTag(data[i].tags) +EmbedContent(data[i].content, true)+'<hr/><div class="CardDateTime">' + new Date(data[i].date) + '</div></div></div>';
                 ++pageIndex;
                 firstRunning = true;
                 LoadPostsBlog();
