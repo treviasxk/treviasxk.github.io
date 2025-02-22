@@ -156,10 +156,13 @@ function RefreshContent(){
         textArea = document.getElementById('editor');
     const title = document.getElementById('titlepost');
     const pin = document.getElementById("pinpost");
+    const tags = document.getElementById('tagspost');
+    const content = EmbedContent(textArea.innerHTML);
+
     console.log(pin.checked);
     document.getElementsByClassName("title").item(0).innerHTML = (pin.checked ? '<div id="Pin"></div>' : "") + (title.value != "" ? title.value : "Title");
+    document.getElementsByClassName("title").item(0).innerHTML += CreateTag(tags.value); 
 
-    var content = EmbedContent(textArea.innerHTML);
     document.getElementsByClassName("content").item(0).innerHTML = content;
     document.getElementsByClassName("CardDateTime").item(0).innerHTML = new Date();
 }

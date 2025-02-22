@@ -39,12 +39,16 @@ async function CheckSession() {
     Authenticated = session ? session.user.aud == "authenticated" : false;
 }
 
-function ShowToast(text){
+function ShowToast(text, color){
     clearInterval(toastTimer);
     if(Alert){
         Alert.style.visibility = "visible";
         Alert.innerText = text;
         Alert.style.opacity = "1";
+        if(color)
+            Alert.style.backgroundColor = color;
+        else
+            Alert.style.backgroundColor = "#FF0000";
     }
     toastTimer = setInterval(function (){
         Alert.style.opacity = "0";
@@ -394,6 +398,8 @@ async function LoadPostsBlog(){
         search.value = query;
         query = query == null ? "" : query;
         tag = tag == null ? "" : tag;
+        if(tag != "")
+            FilterBackground.style.background = 'var(--PrimaryColor)';
 
         if(scrollMaximum <= scrollValue + apiBuffering){
             firstRunning = false;
@@ -409,7 +415,12 @@ async function LoadPostsBlog(){
 
             if(data && data[0]){
                 for(i = 0; i < data.length; i++)
-                    Card.innerHTML += `<div class="Card"><a ` + (data[i].pin ? 'class="Pin"' : '') +' href="?post=' +data[i].id +'">' +  (data[i].pin ? '<div id="Pin"></div>' : '') + data[i].title+'</a><br/>' + await CreateTag(data[i].tags) +EmbedContent(data[i].content, true)+'<hr/><div class="CardDateTime">' + new Date(data[i].date) + '</div></div></div>';
+                    Card.innerHTML += `<div class="Card"><a style='width:calc(100% - 40px)' ` + (data[i].pin ? 'class="Pin"' : '') +' href="?post=' +data[i].id +'">' +  (data[i].pin ? '<div id="Pin"></div>' : '') + data[i].title + `</a><div class="dropdown">
+  <div id="Options"></div>
+  <div class="dropdown-content">
+    <a href="#" onclick="navigator.clipboard.writeText('${window.location.hostname}/?post=${data[i].id}');ShowToast('URL Copied!', 'var(--PrimaryColor)');">Copy URL</a>
+  </div>
+</div>` + '<br/>' + await CreateTag(data[i].tags) + EmbedContent(data[i].content, true)+'<hr/><div class="CardDateTime">' + new Date(data[i].date) + '</div></div></div>';
                 ++pageIndex;
                 firstRunning = true;
                 LoadPostsBlog();

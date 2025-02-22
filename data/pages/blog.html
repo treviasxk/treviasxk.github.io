@@ -1,22 +1,22 @@
 <div class="Feed">
     <div>
-        <div style="cursor: pointer; display: inline-block; margin: 20px 0px 10px 10px; padding: 5px; border-radius: 5px; background: var(--ShadowColor); text-align: center;">
-            <div for="btnControl" id="Filter" onclick="FilterItem.style.display = (FilterItem.style.display == 'none' ? 'block' : 'none');"></div>
+        <div id="FilterBackground" style="cursor: pointer; display: inline-block; margin: 20px 0px 10px 10px; padding: 5px; border-radius: 5px; background: var(--ShadowColor); text-align: center;" onclick="FilterItem.style.display = (FilterItem.style.display == 'none' ? 'block' : 'none');">
+            <div id="Filter"></div>
               
-            <div id="FilterItem" style="display: none; opacity: 1f; padding: 5px; position: fixed; cursor: auto; border-radius: 5px; margin-top: 10px; width: 400px; background: var(--ShadowColor); z-index: 1;">
-                <input style="color: var(--TextColor); background-color: #000000;" type="checkbox" id="pinpost" value="Pin">
-                <label for="Pin">Changelog</label>
-                <input style="color: var(--TextColor); background-color: #000000;" type="checkbox" id="pinpost" value="Pin">
-                <label for="Pin">Annunces</label>
-                <input style="color: var(--TextColor); background-color: #000000;" type="checkbox" id="pinpost" value="Pin">
-                <label for="Pin">Release</label>
-                <br/>
-                <input style="color: var(--TextColor); background-color: #000000;" type="checkbox" id="pinpost" value="Pin">
-                <label for="Pin">Changelog</label>
-                <input style="color: var(--TextColor); background-color: #000000;" type="checkbox" id="pinpost" value="Pin">
-                <label for="Pin">Annunces</label>
-                <input style="color: var(--TextColor); background-color: #000000;" type="checkbox" id="pinpost" value="Pin">
-                <label for="Pin">Release</label>
+            <div id="FilterItem" style="display: none; opacity: 1f; padding: 5px; position: fixed; cursor: auto; border-radius: 5px; margin-top: 10px; background: var(--SegundaryColor); z-index: 1;">
+                <div class="dropdown-content" style="display: block; margin-left: 0px; max-height: 500px; overflow: auto;">
+                    <a href="#" onclick="window.location.href='?page=blog'">None</a>
+                    <hr/>
+                    <a href="#" onclick="window.location.href='?page=blog&tag=Announce'">Announce</a>
+                    <a href="#" onclick="window.location.href='?page=blog&tag=Release'">Release</a>
+                    <a href="#" onclick="window.location.href='?page=blog&tag=Changelog'">Changelog</a>
+                    <a href="#" onclick="window.location.href='?page=blog&tag=Other'">Other</a>
+                    <hr/>
+                    <a href="#" onclick="window.location.href='?page=blog&tag=Alpha Xk'">Alpha Xk</a>
+                    <a href="#" onclick="window.location.href='?page=blog&tag=DevBlog'">DevBlog</a>
+                    <a href="#" onclick="window.location.href='?page=blog&tag=Nethostfire'">Nethostfire</a>
+                    <a href="#" onclick="window.location.href='?page=blog&tag=UNanite'">UNanite</a>
+                </div>
             </div>
         </div>
 
