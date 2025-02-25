@@ -1,3 +1,6 @@
 [submodule "DevBlog"]
 	path = DevBlog
 	url = https://github.com/treviasxk/DevBlog
+[submodule "docs"]
+	path = docs
+	url = https://github.com/treviasxk/DevBlog.git
