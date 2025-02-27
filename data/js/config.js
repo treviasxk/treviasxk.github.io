@@ -5,7 +5,7 @@
 */
 
 // Settings
-var Title = "DevBlog";
+var Title = "Trevias Xk";
 var TotalPostsLoadInScroll = 20;    // Number of posts to load when scrolling
 var MaxCharacteresPosts = 500;      // Maximum number of characters to display in the post list
 
@@ -24,10 +24,9 @@ var Pages = {
 // Available: github, x, linkedin, facebook, instagram
 var SocialNetworks = {
     //example: "github": "https://github.com/treviasxk",
-    "github": "",
-    "x": "",
-    "linkedin": "",
-    "instagram": "",
+    "github": "https://github.com/treviasxk",
+    "x": "https://x.com/treviasxk",
+    "instagram": "https://instagram.com/treviasxk",
 }
 
 // Webhook
