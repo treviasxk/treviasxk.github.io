@@ -14,7 +14,6 @@ var MaxCharacteresPosts = 500;      // Maximum number of characters to display i
 // example "home": "Home" -> /data/pages/home.html
 var Pages = {
     "home": "Home",
-    "blog": "Blog",
     "donate": "Donate",
     "contact": "Contact",
     "about": "About",
@@ -24,9 +23,10 @@ var Pages = {
 // Available: github, x, linkedin, facebook, instagram
 var SocialNetworks = {
     //example: "github": "https://github.com/treviasxk",
-    "github": "https://github.com/treviasxk",
-    "x": "https://x.com/treviasxk",
-    "instagram": "https://instagram.com/treviasxk",
+    "Github": "https://github.com/treviasxk",
+    "X": "https://x.com/treviasxk",
+    "Youtube": "https://youtube.com/treviasxk",
+    "Twitch": "https://twitch.tv/treviasxk",
 }
 
 // Webhook
