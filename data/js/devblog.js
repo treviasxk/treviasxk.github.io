@@ -180,7 +180,6 @@ function OpenNavigation(Open){
         Content.style.minHeight = "calc(100% - 50px)";
         Content.style.opacity = null;
         document.getElementById("AppBar").style.marginTop = "0px";
-
     }else{
         Navigate.style.left = "-100%";
         Content.style.top = "0px";
@@ -256,7 +255,10 @@ window.onscroll = () => {
         if(prevScrollpos >= currentScrollPos || prevScrollpos == 0){
             document.getElementById("AppBar").style.marginTop = "0px";
         }else{
-            document.getElementById("AppBar").style.marginTop = "-50px";
+            if(currentScrollPos > 50)
+                document.getElementById("AppBar").style.marginTop = "-50px";
+            else
+                document.getElementById("AppBar").style.marginTop = "0px";
         }
         prevScrollpos = currentScrollPos;
     }
