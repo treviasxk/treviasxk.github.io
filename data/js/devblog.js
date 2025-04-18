@@ -176,14 +176,14 @@ function BackPage(){
 function OpenNavigation(Open){
     if(Open == false){
         Navigate.style.left = "0px";
-        Content.style.top = "50px";
-        Content.style.minHeight = "calc(100% - 50px)";
+        document.body.style.top = "50px";
+        document.body.style.minHeight = "calc(100% - 50px)";
         Content.style.opacity = null;
         document.getElementById("AppBar").style.marginTop = "0px";
     }else{
         Navigate.style.left = "-100%";
-        Content.style.top = "0px";
-        Content.style.minHeight = "100%";
+        document.body.style.top = "0px";
+        document.body.style.minHeight = "100%";
         Content.style.opacity = "0.2";
         if(!Loading)
         document.getElementById("AppBar").style.marginTop = "-50px";
