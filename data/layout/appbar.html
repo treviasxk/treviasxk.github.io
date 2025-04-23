@@ -3,5 +3,15 @@
 </div>
 <div id="Title" class="Middle" onclick="window.location.href=hostname"></div>
 <div>
-    <div id="SignIn" onclick="window.location.href='?page=login';"></div>
+    <div id="dropdown">
+        <div id="SignIn" onclick="window.location.href='?page=login';"></div>
+        <div id="perfil" class="dropdown-content">
+            <a href="?post=0">New post</a>
+            <a href="?page=perfil">Perfil</a>
+            <hr/>
+            <a href="?page=analysis">Analysis</a>
+            <a href="?page=settings">Settings</a>
+            <a href="#" onclick="Logout()">Logout</a>
+        </div>
+    </div>
 </div>

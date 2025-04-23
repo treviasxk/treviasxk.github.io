@@ -11,6 +11,7 @@
     --HyperLink: dodgerblue;
     --ShadowColor: #006affa3;
     --AppBarText: #FFFFFF;
+    --ToastColor: #060b1f;
 }
 
 @media (prefers-color-scheme: light) {
@@ -20,6 +21,9 @@
         --PanelBackground: #ffffffad;
     }
     #Pin{
+        filter: invert(1);
+    }
+    #Options{
         filter: invert(1);
     }
 }
@@ -37,6 +41,12 @@
         margin: 0px auto;
         width: 100%;
     }
+}
+label{
+    display: block;
+    margin: 10px;
+    opacity: 1;
+    font-weight: bold;
 }
 
 ::-webkit-scrollbar {
@@ -311,10 +321,67 @@ form > input, form > select{
     border-radius: 5px;
 }
 
+
+.container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    margin: 10px 0px;
+}
+
+input[type="text"] {
+    padding: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    color: var(--PanelBackground);
+    transition: filter 0.3s;
+}
+
+input[type="text"]:focus {
+    filter: none;
+    cursor:text;
+    color: var(--TextColor);
+}
+  
+.censored-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--TextColor);
+    font-size: 16px;
+    pointer-events: none;
+    display: none;
+}
+
+  
+input[type="text"]:not(:focus) ~ .censored-text {
+    display: flex;
+}
+
+input {
+    background-color: var(--BackgroundColor);
+    box-sizing: border-box;
+    text-align: left;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px 10px;
+    width: calc(100% - 20px);
+    border: 1px solid var(--ShadowColor);
+    color: var(--TextColor);
+    border-radius: 5px;
+}
+
+input:disabled{
+    color: var(--SegundaryColor);
+}
+
 .btn {
     cursor: pointer;
     color: var(--AppBarText);
     background-color: var(--PrimaryColor);
+    border-radius: 5px;cursor: pointer; text-align: center; display: inline-block; width: 40%; padding: 10px; background-color: var(--PrimaryColor);
 }
 
 #ScreenLoading {
@@ -403,6 +470,7 @@ form > input, form > select{
     padding: 10px;
     opacity: 0;
     font-size: 16px;
+    font-weight: bold;
     transition: 1s;
 }
 
@@ -430,6 +498,15 @@ input[type="checkbox"] {
     background-color: var(--SegundaryColor);
 }
 #Submit {
+    border-radius: 5px;
+    box-sizing: border-box;
+    text-align: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px 10px;
+    max-width: 300px;
+    margin-bottom: 10px;
     cursor: pointer;
     color: var(--AppBarText);
     background-color: var(--PrimaryColor);
@@ -471,6 +548,9 @@ input[type="checkbox"] {
     height: 25px;
     mask: url("/data/img/icons.png") -50px 0px;
     background-color: white;
+}
+#SignIn > .dropdown-content{
+    display: none;
 }
 #Perfil{
     cursor: pointer;
@@ -529,7 +609,6 @@ input[type="checkbox"] {
 #Options{
     display: inline-block;
     cursor: pointer;
-    margin: 0px 15px;
     width: 25px;
     height: 25px;
     mask: url("/data/img/icons.png") 0px -25px;
@@ -616,22 +695,22 @@ input[type="checkbox"] {
     }
 }
 
-  
 .dropdown {
-    position: absolute;
     display: inline-block;
 }
 
 .dropdown-content {
+    position: absolute;
     margin-left: -110px;
     display: none;
     min-width: 160px;
     z-index: 1;
     border-radius: 5px;
-    background: var(--ShadowColor);
+    background: var(--ToastColor);
 }
 
 .dropdown-content a {
+    font-size: 13px;
     padding: 10px;
     text-decoration: none;
     display: block;

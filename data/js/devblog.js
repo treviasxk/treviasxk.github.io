@@ -47,7 +47,7 @@ function LoadSocialNetworks(){
     var socials = document.getElementsByClassName("Footer").item(0);
     var valores = Object.entries(SocialNetworks);
     for(const social of valores){
-        socials.innerHTML += `<a href="${social[1]}"><img src="data/img/socials/${social[0].toLowerCase()}.png" title="${social[0]}" draggable="false"></a>`;
+        socials.innerHTML += `<a href="${social[1]}" target="_blank"><img src="data/img/socials/${social[0].toLowerCase()}.png" title="${social[0]}" draggable="false"></a>`;
     }
     socials.innerHTML += `<p>Made with <a href="https://github.com/treviasxk/DevBlog">DevBlog</a></p>`;
 }
@@ -93,31 +93,68 @@ async function AppMain(){
 
         var AU = ()=>{
             ChangeTitle(Title);
+
+            if(searchParams.get("post") && searchParams.get("post") != 0){
+                OpenMenu.setAttribute("onclick","BackPage();");
+                OpenMenu.setAttribute("id","BackPage");
+            }
+            
+
             if(Authenticated){
+                var dropdown = document.getElementById("dropdown");
+                if(dropdown)
+                    dropdown.setAttribute("class","dropdown");
+                
                 var SignIn = document.getElementById("SignIn");
                 if(SignIn){
-                    if(searchParams.get("post") && searchParams.get("post") == 0){
-                        SignIn.setAttribute("id","NoButton");
-                    }else{
-                        SignIn.setAttribute("onclick","window.location.href='?post=0';");
-                        SignIn.setAttribute("id","Edit");
-                    }
+                    SignIn.removeAttribute("onclick");
+                    SignIn.setAttribute("id","Perfil");
                 }
             }
         }
 
-        if(searchParams.get("post") && searchParams.get("post") != 0)
-            if(page == "data/layout/appbar.html")
-                page = "data/layout/appbar_backpage.html";
 
-        if(page == "data/layout/appbar.html" || page == "data/layout/appbar_backpage.html")
+        if(page == "data/layout/appbar.html")
             await LoadLayout(page, content, AU);
 
         if(page == "data/layout/content.html")
             if(searchParams.get("page")){
                 switch(searchParams.get("page")){
+                    case "perfil":
+                        if(Authenticated)
+                            await LoadLayout("data/layout/perfil.html", content);
+                        else
+                            location.href = hostname;
+                    break;
+                    case "analysis":
+                        if(Authenticated)
+                            await LoadLayout("data/layout/analysis.html", content);
+                        else
+                            location.href = hostname;
+                    break;
                     case "login":
-                        await LoadLayout("data/layout/login.html", content);
+                        if(!Authenticated)
+                            await LoadLayout("data/layout/login.html", content);
+                        else
+                            location.href = hostname;
+                    break;
+                    case "settings":
+                        if(Authenticated)
+                            await LoadLayout("data/layout/settings.html", content,async ()=>{
+                                const { data, error } = await supabase
+                                .from('settings')
+                                .select('*')
+                                .eq('key', 'discord');
+
+                                document.getElementById("Submit").addEventListener("click", SaveSettings);
+                                document.getElementById("SupabaseKey").value = SupabaseKey;
+                                document.getElementById("SupabaseUrl").value = SupabaseUrl;
+
+                                document.getElementById("DiscordWebHook").value = data[0] != null ? data[0].value : "";
+                            
+                            });
+                        else
+                            location.href = hostname;
                     break;
                     default:
                         await LoadPage(searchParams.get("page"), content);
@@ -135,6 +172,16 @@ async function AppMain(){
     }
 
     LoadSwipe();
+}
+
+async function SaveSettings(){
+    if(Authenticated){
+        const { error } = await supabase
+        .from('settings')
+        .update({value: document.getElementById("DiscordWebHook").value})
+        .eq('key', 'discord');
+        ShowToast("Settings saved!", "var(--PrimaryColor)");
+    }
 }
 
 
@@ -302,7 +349,7 @@ async function LoadPost(id, content){
             document.getElementsByClassName("title").item(0).innerHTML = (data[0].pin ? '<div id="Pin"></div>' : "") + data[0].title;
             document.getElementsByClassName("title").item(0).innerHTML += CreateTag(data[0].tags); 
             document.getElementsByClassName("content").item(0).innerHTML = content;
-            document.getElementsByClassName("Status").item(0).innerHTML = "<div id='Views'></div>" + data[0].views + " Views <div id='DateTime'></div>" + new Date(data[0].date).toLocaleString("default",{ hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric'});
+            document.getElementsByClassName("Status").item(0).innerHTML = "<div id='Views'></div>" + formatViews(data[0].views) + " Views <div id='DateTime'></div>" + new Date(data[0].date).toLocaleString("default",{ hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric'});
             if(Authenticated){
                 const title = document.getElementById('titlepost');
                 const textArea = document.getElementById('editor');
@@ -334,6 +381,23 @@ async function LoadPost(id, content){
     }
 }
 
+
+function formatViews(views) {
+    if (typeof views !== 'number' || isNaN(views)) {
+      return '0';
+    }
+  
+    if (views >= 1000000) {
+      // Para milhões (ex.: 1200000 → 1,2 mi)
+      return (views / 1000000).toFixed(1).replace('.0', '') + ' mi';
+    } else if (views >= 1000) {
+      // Para milhares (ex.: 1300 → 1,3 mil)
+      return (views / 1000).toFixed(1).replace('.0', '') + ' mil';
+    } else {
+      // Para menos de 1000 (ex.: 500 → 500)
+      return views.toString();
+    }
+  }
 
 function SelectItem(){
     var navigate = document.querySelectorAll('.MenuItem');
@@ -433,10 +497,15 @@ async function LoadPostsBlog(){
                 for(i = 0; i < data.length; i++){
                     Card.innerHTML += `<div class="Card"><a style='width:calc(100% - 40px);margin-bottom:10px' ` + (data[i].pin ? 'class="Pin"' : '') +' href="?post=' +data[i].id +'">' +  (data[i].pin ? '<div id="Pin"></div>' : '') + data[i].title + `</a><div class="dropdown">
   <div id="Options"></div>
-  <div class="dropdown-content">
+  <div class="dropdown-content">`
+    + (Authenticated ? `
+        <a href="#" onclick="Pin(${data[i].id}, ${!data[i].pin})">${data[i].pin ? "Unpin" : "Pin"}</a>
+        <a href="#">Analysis</a>
+        <a href="?post=${data[i].id}#editor">Edit</a>
+        <hr/>` : "") + `
     <a href="#" onclick="navigator.clipboard.writeText('${hostname}?post=${data[i].id}');ShowToast('URL Copied!', 'var(--PrimaryColor)');">Copy URL</a>
   </div>
-</div>` + await CreateTag(data[i].tags) + EmbedContent(data[i].content, true) + '<hr/><div class="Status">' + "<div id='Views'></div>" + data[i].views + " Views <div id='DateTime'></div>" + new Date(data[i].date).toLocaleString("default",{ hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric'}) + '</div></div></div>';
+</div>` + await CreateTag(data[i].tags) + EmbedContent(data[i].content, true) + '<hr/><div class="Status">' + "<div id='Views'></div>" + formatViews(data[i].views) + " Views <div id='DateTime'></div>" + new Date(data[i].date).toLocaleString("default",{ hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric'}) + '</div></div></div>';
                 }
                 ++pageIndex;
                 firstRunning = true;
@@ -449,6 +518,18 @@ async function LoadPostsBlog(){
             }
         }
     }
+}
+
+async function Pin(id, pin){
+    await supabase
+    .from('blog')
+    .update({ pin: pin })
+    .eq('id', id);
+    if(pin)
+        ShowToast("Post pinned!", "var(--PrimaryColor)");
+    else
+        ShowToast("Post unpinned!", "var(--PrimaryColor)");
+    window.location.href=`${hostname}`;
 }
 
 function CreateTag(tags){
@@ -550,41 +631,43 @@ async function Login(){
 }
 
 async function Publish(){
-    const textArea = document.getElementsByClassName('ql-editor').item(0);
-    const title = document.getElementById('titlepost');
-    const pin = document.getElementById('pinpost');
-    const tags = document.getElementById('tagspost');
-    const urlParams = new URLSearchParams(window.location.search);
-    let searchParams = new URLSearchParams(urlParams);
-    document.getElementById("Process").style.display = "grid";
-    if(title.value.length < 5)
-        ShowToast("The title cannot be less than 5 characteres!")
-    else
-    if(title.value == "")
-        ShowToast("The title cannot be empty!")
-    else
-    if(searchParams.get("post") && searchParams.get("post") != 0){
-        // update
-        const id = searchParams.get("post");
-        const { error } = await supabase
-        .from('blog')
-        .update({ title: title.value, content: textArea.innerHTML, pin: pin.checked, tags: tags.value})
-        .eq('id', id)
+    if(Authenticated){
+        const textArea = document.getElementsByClassName('ql-editor').item(0);
+        const title = document.getElementById('titlepost');
+        const pin = document.getElementById('pinpost');
+        const tags = document.getElementById('tagspost');
+        const urlParams = new URLSearchParams(window.location.search);
+        let searchParams = new URLSearchParams(urlParams);
+        document.getElementById("Process").style.display = "grid";
+        if(title.value.length < 5)
+            ShowToast("The title cannot be less than 5 characteres!")
+        else
+        if(title.value == "")
+            ShowToast("The title cannot be empty!")
+        else
+        if(searchParams.get("post") && searchParams.get("post") != 0){
+            // update
+            const id = searchParams.get("post");
+            const { error } = await supabase
+            .from('blog')
+            .update({ title: title.value, content: textArea.innerHTML, pin: pin.checked, tags: tags.value})
+            .eq('id', id)
+    
+            window.location.href=`${hostname}?post=${id}`;
+        }else{
+            // insert
+            const { data } = await supabase
+            .from('blog')
+            .insert([
+              { title: title.value, content: textArea.innerHTML, pin: pin.checked, tags: tags.value},
+            ])
+            .select();
 
-        window.location.href=`${hostname}?post=${id}`;
-    }else{
-        // insert
-        const { data, error } = await supabase
-        .from('blog')
-        .insert([
-          { title: title.value, content: textArea.innerHTML, pin: pin.checked, tags: tags.value},
-        ])
-        .select();
-
-        await SendDiscordWebHook(title.value, textArea.innerHTML, `${hostname}?post=${data[0].id}`);
-        window.location.href=`${hostname}?post=${data[0].id}`;
+            await SendDiscordWebHook(title.value, textArea.innerHTML, `${hostname}?post=${data[0].id}`);
+            window.location.href=`${hostname}?post=${data[0].id}`;
+        }
+        document.getElementById("Process").style.display = "none";
     }
-    document.getElementById("Process").style.display = "none";
 }
 
 async function Delete(){
@@ -592,7 +675,7 @@ async function Delete(){
     let searchParams = new URLSearchParams(urlParams);
     document.getElementById("Process").style.display = "grid";
     if(searchParams.get("post")){
-        const response = await supabase
+        await supabase
         .from('blog')
         .delete()
         .eq('id', searchParams.get("post"));
@@ -627,6 +710,14 @@ function RefreshContent(){
     document.getElementsByClassName("Status").item(0).innerHTML = "<div id='Views'></div>0 Views <div id='DateTime'></div>" + new Date().toLocaleString("default",{ hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric'});
 }
 
+function Logout(){
+    if(Authenticated){
+        supabase.auth.signOut().then(() => {
+            window.location.href=hostname;
+        });
+    }
+}
+
 async function SendDiscordWebHook(title, description, url) {
     if(title && description){
         description = RemoveHTMLTags(EmbedContent(description)).substring(0, MaxCharacteresPosts);
@@ -637,7 +728,7 @@ async function SendDiscordWebHook(title, description, url) {
 
         const mensagem = {
             username: "DevBlog", // Nome do bot (opcional)
-            avatar_url: 'https://treviasxk.github.io/DevBlog/data/img/logo.png', // URL do avatar (opcional)
+            avatar_url: hostname + '/data/img/logo.png', // URL do avatar (opcional)
             embeds: [{
                 title: title,
                 description: description,
@@ -647,18 +738,21 @@ async function SendDiscordWebHook(title, description, url) {
                 },
                 footer: {
                     text: Title,
-                    icon_url: hostname + '/data/img/logo.png'
+                    icon_url: 'https://treviasxk.github.io/DevBlog/data/img/logo.png'
                 },
                 timestamp: new Date().toISOString()
             }]
         };
         
         try{
-            await fetch(DiscordWebHook, {
+            const { data } = await supabase
+            .from('settings')
+            .select('discord');
+
+            if(data[0] != null)
+            await fetch(data[0].discord, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(mensagem)
             });
         }catch (erro) {

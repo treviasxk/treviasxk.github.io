@@ -27,10 +27,8 @@ var SocialNetworks = {
     "X": "https://x.com/treviasxk",
     "Youtube": "https://youtube.com/treviasxk",
     "Twitch": "https://twitch.tv/treviasxk",
+    "Kick": "https://kick.com/treviasxk",
 }
-
-// Webhook
-var DiscordWebHook = "https://discord.com/api/webhooks/1344617768494043146/KxfbMrP7ApqFg507HTj6WXv2YYA6PIRdvmToNIaB3DgD-SltzvRIHDos0t38MTFox6QF";
 
 // Supabase
 var SupabaseUrl = "https://cyhgmlceqsfktdivwbgg.supabase.co";
