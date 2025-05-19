@@ -141,7 +141,7 @@ async function AppMain(){
                     case "settings":
                         if(Authenticated)
                             await LoadLayout("data/layout/settings.html", content,async ()=>{
-                                const { data, error } = await supabase
+                                const { data } = await supabase
                                 .from('settings')
                                 .select('*')
                                 .eq('key', 'discord');
@@ -656,15 +656,19 @@ async function Publish(){
             window.location.href=`${hostname}?post=${id}`;
         }else{
             // insert
-            const { data } = await supabase
+            const {data} = await supabase
             .from('blog')
             .insert([
-              { title: title.value, content: textArea.innerHTML, pin: pin.checked, tags: tags.value},
+              { title: title.value, views: 0, content: textArea.innerHTML, pin: pin.checked, tags: tags.value},
             ])
             .select();
 
-            await SendDiscordWebHook(title.value, textArea.innerHTML, `${hostname}?post=${data[0].id}`);
-            window.location.href=`${hostname}?post=${data[0].id}`;
+            if(data[0]!= null) {
+                await SendDiscordWebHook(title.value, textArea.innerHTML, `${hostname}?post=${data[0].id}`);
+                window.location.href = `${hostname}?post=${data[0].id}`;
+            } else {
+                ShowToast("Unable to publish post, please check your connection to the server.");
+            }
         }
         document.getElementById("Process").style.display = "none";
     }
@@ -719,7 +723,7 @@ function Logout(){
 }
 
 async function SendDiscordWebHook(title, description, url) {
-    if(title && description){
+    if(Authenticated && title && description){
         description = RemoveHTMLTags(EmbedContent(description)).substring(0, MaxCharacteresPosts);
         description += description.length < MaxCharacteresPosts ? "" : "...";
 
@@ -728,7 +732,7 @@ async function SendDiscordWebHook(title, description, url) {
 
         const mensagem = {
             username: "DevBlog", // Nome do bot (opcional)
-            avatar_url: hostname + '/data/img/logo.png', // URL do avatar (opcional)
+            avatar_url: hostname + 'data/img/logo.png', // URL do avatar (opcional)
             embeds: [{
                 title: title,
                 description: description,
@@ -745,12 +749,14 @@ async function SendDiscordWebHook(title, description, url) {
         };
         
         try{
-            const { data } = await supabase
+            // discord
+            var { data } = await supabase
             .from('settings')
-            .select('discord');
+            .select('*')
+            .eq('key', 'discord');
 
             if(data[0] != null)
-            await fetch(data[0].discord, {
+            await fetch(data[0].value, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(mensagem)
